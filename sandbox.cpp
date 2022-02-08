@@ -36,37 +36,44 @@ void *get_in_addr(struct sockaddr *sa)
 int			main(int argc, char *argv[])
 {
 	int 								status, sockfd, new_fd;
-	struct addrinfo 					hints, *res, *p;
 	struct sockaddr_storage				their_addr;
 	socklen_t 							sin_size;
 	struct sigaction					sa;
-	int yes = 1;
-	char 		s[INET6_ADDRSTRLEN];
+	int 								yes = 1;
+	char 								s[INET6_ADDRSTRLEN];
+	fd_set 								master;
+	fd_set 								read_fds;
+	int 								fd_max;
+	int 								listener;
+	int 								newfd;
+	struct sockaddr_storage				remoteaddr;
+	socklen_t 							addrlen;
+	char								buf[256];
+	int									nbytes;
+	char								remoteIP[INET6_ADDRSTRLEN];
+	int 								i, j, rv;
+	struct addrinfo						hints, *ai, *p;
 
+	FD_ZERO(&master);
+	FD_ZERO(&read_fds);
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
-	if ((status = getaddrinfo(NULL, MYPORT, &hints, &res)) != 0)
+	if ((rv = getaddrinfo(NULL, MYPORT, &hints, &ai)) != 0)
 	{
-		fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
-		exit(2);
+		fprintf(stderr, "select server: %s\n", gai_strerror(rv));
+		exit(1);
 	}
-	for (p = res; p != NULL; p = p->ai_next)
+	for (p = ai; p != NULL; p = p->ai_next)
 	{
-		if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
-		{
-			perror("server: socket");
+		listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+		if (listener < 0)
 			continue;
-		}
-		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
-					   sizeof(int)) == -1) {
-			perror("setsockopt");
-			exit(1);
-		}
-		if ((bind(sockfd, p->ai_addr, p->ai_addrlen)) == -1)
+		setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int));
+		if ((bind(listener, p->ai_addr, p->ai_addrlen)) < 0)
 		{
-			close(sockfd);
+			close(listener);
 			perror("server: bind");
 			continue;
 		}
@@ -74,47 +81,46 @@ int			main(int argc, char *argv[])
 	}
 	if (p == NULL)
 	{
-		fprintf(stderr, "server: failed to bind");
-		return (2);
+		fprintf(stderr, "selectserver: failed to bind");
+		exit(2);
 	}
-	freeaddrinfo(res); // why do we free here?
-	if (listen(sockfd, BACKLOG) == -1)
+	freeaddrinfo(ai); // why do we free here?
+	if (listen(listener, BACKLOG) == -1)
 	{
 		perror("listen");
-		exit(1);
+		exit(3);
 	}
-	sa.sa_handler = sigchld_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	if (sigaction(SIGCHLD, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		exit(1);
-	}
+	FD_SET(listener, &master);
+	fd_max = listener;
 	printf("server waiting for connections...\n");
-	while (1)
+	for (;;)
 	{
-		sin_size = sizeof(their_addr);
-		if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1)
+		read_fds = master;
+		if (select(fd_max + 1, &read_fds, NULL, NULL, NULL) == -1)
 		{
-			printf("new_fd: %d\n", new_fd);
-			printf("sockfd: %d\n", sockfd);
-			perror("server: accept");
-			break;
+			perror("select");
+			exit(4);
 		}
-		inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s,
-													sizeof(s));
-		printf("server: got connection from %s\n", s);
-		if (!fork())
+		for (i = 0; i <= fd_max ; i++)
 		{
-			close(sockfd);
-			if (send(new_fd, "Aizhan was here", 15, 0) == -1)
+			if (FD_ISSET(i, &read_fds))
 			{
-				perror("send");
+				if (i == listener)
+				{
+					addrlen = sizeof(remoteaddr);
+					new_fd = accept(listener, (struct sockaddr *)&remoteaddr, &addrlen);
+					if (new_fd == -1)
+						perror("accept");
+					else
+					{
+						FD_SET(new_fd, &master);
+						if ()
+					}
+				}
+
 			}
-			close(new_fd);
-			exit(0);
 		}
+
 	}
 	return (0);
 }
