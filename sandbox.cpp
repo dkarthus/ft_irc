@@ -14,17 +14,17 @@
 #define MYPORT "3490"
 #define BACKLOG 10
 
-void sigchld_handler(int s)
-{
-	(void)s; // quiet unused variable warning
-
-	// waitpid() might overwrite errno, so we save and restore it:
-	int saved_errno = errno;
-
-	while(waitpid(-1, NULL, WNOHANG) > 0);
-
-	errno = saved_errno;
-}
+//void sigchld_handler(int s)
+//{
+//	(void)s; // quiet unused variable warning
+//
+//	// waitpid() might overwrite errno, so we save and restore it:
+//	int saved_errno = errno;
+//
+//	while(waitpid(-1, NULL, WNOHANG) > 0);
+//
+//	errno = saved_errno;
+//}
 // получить sockaddr, IPv4 или IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -114,13 +114,40 @@ int			main(int argc, char *argv[])
 					else
 					{
 						FD_SET(new_fd, &master);
-						if ()
+						if (new_fd > fd_max)
+							fd_max = new_fd;
+					}
+					printf("selectserver: new connection from %s on socket %d\n", inet_ntop(remoteaddr.ss_family,
+																							get_in_addr((struct sockaddr*)&remoteaddr), remoteIP, INET6_ADDRSTRLEN), new_fd);
+				}
+				else
+				{
+					if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
+					{
+						if (nbytes == 0)
+							printf("selectserver: socket %d hung up\n", i);
+						else
+							perror("recv");
+						close(i);
+						FD_CLR(i, &master);
+					}
+					else
+					{
+						for (j = 0; j <= fd_max ; j++)
+						{
+							if (FD_ISSET(j, &master))
+							{
+								if (j != listener && j != i)
+								{
+									if (send(j, buf, nbytes, 0) == -1)
+										perror("send");
+								}
+							}
+						}
 					}
 				}
-
 			}
 		}
-
 	}
 	return (0);
 }
