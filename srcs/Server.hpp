@@ -15,17 +15,20 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include "Socket.hpp"
+#include "Storage.hpp"
 
 #define SERVER_PORT "3490"
 #define TRUE 1
 #define FALSE 0
+#define FD_SIZE 10
 
 class Server
 {
 private:
-	struct pollfd		fds[10];
+	struct pollfd		fds[FD_SIZE];
 	int 				timeout;
-	char 				buffer[80];
+	Storage				storage[FD_SIZE];
+
 public:
 	Server();
 	Server(const Server &other);

@@ -123,6 +123,8 @@ void Server::pollConnections(int listenSocket)
 	int 			closeConn;
 	int 			len;
 	int 			compressArray = FALSE;
+	int				count;
+
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
 	/* on any of the connected sockets.                          */
@@ -165,28 +167,29 @@ void Server::pollConnections(int listenSocket)
 			{
 				printf("  Descriptor %d is readable\n", fds[i].fd);
 				closeConn = FALSE;
-				rc = recv(fds[i].fd, buffer, sizeof(buffer), 0);
-				if (rc <= 0)
+				rc = recv(fds[i].fd, storage[i].buffer, sizeof(storage[i].buffer), 0);
+				if (rc < 0)
 				{
 					if (errno != EWOULDBLOCK)
 					{
 						perror("  recv() failed");
 						closeConn = TRUE;
 					}
-					else
-					{
-						closeConn = TRUE;
-						printf("  Connection closed\n");
-						printf("  Descriptor %d closed\n", fds[i].fd);
-						printf("EWOULDBLOCK\n");
-					}
-
+				}
+				if (rc == 0)
+				{
+					closeConn = TRUE;
+//					printf("Contents of data: ");
+//					std::cout << storage.data;
+					printf("  Connection closed\n");
+					printf("  Descriptor %d closed\n", fds[i].fd);
 				}
 				else
 				{
+					storage[i].setData();
 					len = rc;
 					printf("  %d bytes received\n", len);
-					rc = send(fds[i].fd, buffer, len, 0);
+					rc = send(fds[i].fd, storage[i].buffer, len, 0);
 					if (rc < 0)
 					{
 						perror("  send() failed");
@@ -238,3 +241,5 @@ void Server::printFds()
 		printf("fd: %d, ", fds[i].fd);
 	}
 }
+
+

@@ -2,7 +2,8 @@ NAME = IRC-server
 
 SRCS =		srcs/main.cpp \
 			srcs/Server.cpp \
-			srcs/Socket.cpp
+			srcs/Socket.cpp \
+			srcs/Storage.cpp
 
 OBJ = $(patsubst %.cpp, %.o, $(SRCS))
 
@@ -11,7 +12,9 @@ CC = c++
 FLAGS = #-Wall -Wextra -Werror
 
 INCLUDE =	srcs/Server.hpp \
-			srcs/Socket.hpp
+			srcs/Socket.hpp \
+			srcs/Storage.hpp
+
 
 RM = rm -f
 
