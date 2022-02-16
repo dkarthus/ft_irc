@@ -32,7 +32,7 @@ int			main(int argc, char *argv[])
 	/*************************************************************/
 	for (i = 0; i < nfds; i++)
 	{
-		if(fds[i].fd >= 0)
+		if(fds[i].fd >= 10)
 			close(fds[i].fd);
 	}
 	return (0);
