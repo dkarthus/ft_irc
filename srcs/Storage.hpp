@@ -11,11 +11,15 @@ class Storage
 {
 private:
 	std::string 		data;
+	typedef	struct	s_list
+	{
+	    std::string 	*command;
+	    struct s_list	*prev;
+	    struct s_list	*next;
+	}				t_list;
 public:
-
-	Storage();
-
-	char 				buffer[BUFFSIZE];
+    Storage();
+    char 				buffer[BUFFSIZE];
 	Storage(const Storage &other);
 	Storage			&operator=(const Storage &other);
 	~Storage();
