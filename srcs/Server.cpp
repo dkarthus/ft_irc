@@ -180,8 +180,6 @@ void Server::pollConnections(int listenSocket)
 				if (rc == 0)
 				{
 					closeConn = TRUE;
-//					printf("Contents of data: ");
-//					std::cout << storage.data;
 					printf("  Connection closed\n");
 					printf("  Descriptor %d closed\n", fds[i].fd);
 				}
@@ -189,9 +187,10 @@ void Server::pollConnections(int listenSocket)
 				{
 					len = rc;
 					printf("  %d bytes received\n", len);
-					std::cout << storage[i].buffer << "\n";
-					storage[i].setData();
 					rc = send(fds[i].fd, storage[i].buffer, len, 0);
+					std::cout << "Printing buffer" << std::endl;
+					std::cout << storage[i].buffer << std::endl;
+					storage[i].setData();
 					if (rc < 0)
 					{
 						perror("  send() failed");
