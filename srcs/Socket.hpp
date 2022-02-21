@@ -27,9 +27,8 @@ private:
 	struct addrinfo		hints;
 	struct addrinfo		*res;
 	int					listen_sock;
-public:
-public:
 
+public:
 	Socket();
 	Socket(const Socket &other);
 	Socket				&operator=(const Socket &other);

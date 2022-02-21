@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include "Socket.hpp"
 #include "Storage.hpp"
+#include "utils.hpp"
 
 #define SERVER_PORT "3490"
 #define TRUE 1

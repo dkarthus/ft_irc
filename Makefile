@@ -3,7 +3,8 @@ NAME = ircserv
 SRCS =		srcs/main.cpp \
 			srcs/Server.cpp \
 			srcs/Socket.cpp \
-			srcs/Storage.cpp
+			srcs/Storage.cpp \
+			srcs/utils.cpp
 
 OBJ = $(patsubst %.cpp, %.o, $(SRCS))
 
@@ -13,7 +14,8 @@ FLAGS = #-Wall -Wextra -Werror
 
 INCLUDE =	srcs/Server.hpp \
 			srcs/Socket.hpp \
-			srcs/Storage.hpp
+			srcs/Storage.hpp \
+			srcs/utils.hpp
 
 
 RM = rm -f

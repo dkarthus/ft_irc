@@ -5,28 +5,27 @@
 #include <cstdio>
 #include <iostream>
 #include <cstring>
+#include "utils.hpp"
 #define BUFFSIZE 15
 
 class Storage
 {
 private:
-	std::string 		data;
-	typedef	struct	s_list
-	{
-	    std::string 	*command;
-	    struct s_list	*prev;
-	    struct s_list	*next;
-	}				t_list;
+//	std::string 		data;
+	t_list 				*data;
+
 public:
-    Storage();
-    char 				buffer[BUFFSIZE];
+
+	char 				buffer[BUFFSIZE];
+	Storage();
 	Storage(const Storage &other);
 	Storage			&operator=(const Storage &other);
 	~Storage();
-	void 						setData();
 
-	const std::string 			&getData() const;
-	void clearBuffer();
+	t_list					 *getData() const;
+	void 					setData(char *content);
+	void 					clearBuffer();
+
 };
 
 #endif

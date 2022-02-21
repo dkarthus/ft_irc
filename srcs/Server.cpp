@@ -1,5 +1,6 @@
 #include "Server.hpp"
 
+
 Server::Server()
 {
 
@@ -52,8 +53,8 @@ void Server::startSocket(Socket &serv_socket)
 		/* the incoming connections will also be nonblocking since   */
 		/* they will inherit that state from the listening socket.   */
 		/*************************************************************/
-//		rc = fcntl(listen_sd, F_SETFL, O_NONBLOCK);
-		rc = ioctl(listen_sd, FIONBIO, (char *)&on);
+		rc = fcntl(listen_sd, F_SETFL, O_NONBLOCK);
+//		rc = ioctl(listen_sd, FIONBIO, (char *)&on);
 		if (rc < 0)
 		{
 			perror("fcntl() failed");
@@ -188,9 +189,11 @@ void Server::pollConnections(int listenSocket)
 					len = rc;
 					printf("  %d bytes received\n", len);
 					rc = send(fds[i].fd, storage[i].buffer, len, 0);
-					std::cout << "Printing buffer" << std::endl;
-					std::cout << storage[i].buffer << std::endl;
-					storage[i].setData();
+//					std::cout << "Printing buffer" << std::endl;
+//					std::cout << storage[i].buffer << std::endl;
+					storage[i].setData(storage[i].buffer);
+					std::cout << "Printing data" << std::endl;
+					ft_lst_print(storage[i].getData());
 					if (rc < 0)
 					{
 						perror("  send() failed");

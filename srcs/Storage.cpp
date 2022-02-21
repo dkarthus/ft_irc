@@ -3,6 +3,7 @@
 Storage::Storage()
 {
 	Storage::clearBuffer();
+	data = NULL;
 }
 
 Storage::Storage(const Storage &other)
@@ -21,16 +22,15 @@ Storage::~Storage()
 }
 
 
-void Storage::setData()
+void Storage::setData(char *content)
 {
-	data += buffer;
+	t_list 		*temp;
+
+	temp = ft_lstnew(content);
+	ft_lstadd_back(&data, temp);
 	Storage::clearBuffer();
 }
 
-const std::string &Storage::getData() const
-{
-	return data;
-}
 
 void Storage::clearBuffer()
 {
@@ -38,5 +38,10 @@ void Storage::clearBuffer()
 	{
 		buffer[i] = 0;
 	}
+}
+
+t_list *Storage::getData() const
+{
+	return data;
 }
 
