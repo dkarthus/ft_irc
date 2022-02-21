@@ -34,8 +34,8 @@ public:
 	Server(const Server &other);
 	Server			&operator=(const Server &other);
 	~Server();
-
 	void			startSocket(Socket &serv_socket);
+
 	void 			listenConnections(int socket);
 	void 			initFdStruct(int socket);
 	void 			pollConnections(int socket);

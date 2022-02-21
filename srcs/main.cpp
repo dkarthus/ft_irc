@@ -3,17 +3,8 @@
 
 int			main(int argc, char *argv[])
 {
-	int						listen_sd, new_sd;
-	struct addrinfo			hints, *res, *tmp;
-	int 					rv, rc;
-	int 					yes = 1;
 	struct pollfd 			fds[200]; // need dynamic allocation
-	int 					timeout;
-	int    					nfds = 1, current_size = 0, i, j;
-	int    					end_server = FALSE, compress_array = FALSE;
-	int    					close_conn;
-	char   					buffer[80];
-	int 					len;
+	int    					nfds = 1, i;
 
 	Socket  				servSocket;
 	Server					ircServer;

@@ -84,7 +84,7 @@ void Server::listenConnections(int socket)
 	/*************************************************************/
 	/* Set the listen back log                                   */
 	/*************************************************************/
-	rc = listen(socket, 10);
+	rc = listen(socket, 20);
 	if (rc < 0)
 	{
 		perror("listen() failed");
@@ -186,9 +186,10 @@ void Server::pollConnections(int listenSocket)
 				}
 				else
 				{
-					storage[i].setData();
 					len = rc;
 					printf("  %d bytes received\n", len);
+					std::cout << storage[i].buffer << "\n";
+					storage[i].setData();
 					rc = send(fds[i].fd, storage[i].buffer, len, 0);
 					if (rc < 0)
 					{
@@ -241,5 +242,6 @@ void Server::printFds()
 		printf("fd: %d, ", fds[i].fd);
 	}
 }
+
 
 
