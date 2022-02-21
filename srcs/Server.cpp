@@ -146,8 +146,9 @@ void Server::pollConnections(int listenSocket)
 			if (fds[i].revents != POLLIN)
 			{
 				printf("  Error! revents = %d\n", fds[i].revents);
-				endServer = TRUE;
-				break;
+//				endServer = TRUE;
+//				break;
+                closeConn = TRUE;
 			}
 			if (fds[i].fd == listenSocket)
 			{

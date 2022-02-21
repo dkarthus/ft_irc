@@ -11,7 +11,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <string>
-#include <asm-generic/ioctls.h>
+//#include <asm-generic/ioctls.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include "Socket.hpp"
