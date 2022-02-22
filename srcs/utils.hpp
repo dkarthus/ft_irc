@@ -16,18 +16,5 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
-typedef	struct	s_list
-{
-	char 			*command;
-	struct s_list	*prev;
-	struct s_list	*next;
-}				t_list;
-
-t_list 				*ft_lstnew(char *content);
-t_list				*ft_lstlast(t_list *lst);
-void				ft_lstadd_back(t_list **alst, t_list *newList);
-void				ft_lst_print(t_list *lst);
-char 				*ft_strdup(const char *s1);
-size_t				ft_strlen(const char *s);
 
 #endif

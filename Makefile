@@ -4,7 +4,8 @@ SRCS =		srcs/main.cpp \
 			srcs/Server.cpp \
 			srcs/Socket.cpp \
 			srcs/Storage.cpp \
-			srcs/utils.cpp
+			srcs/utils.cpp \
+			srcs/Node.cpp
 
 OBJ = $(patsubst %.cpp, %.o, $(SRCS))
 
@@ -15,7 +16,9 @@ FLAGS = #-Wall -Wextra -Werror
 INCLUDE =	srcs/Server.hpp \
 			srcs/Socket.hpp \
 			srcs/Storage.hpp \
-			srcs/utils.hpp
+			srcs/utils.hpp \
+			srcs/Node.hpp
+
 
 
 RM = rm -f

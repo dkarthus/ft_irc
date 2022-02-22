@@ -6,25 +6,26 @@
 #include <iostream>
 #include <cstring>
 #include "utils.hpp"
-#define BUFFSIZE 15
+#include "Node.hpp"
+#define BUFFSIZE 256
 
 class Storage
 {
 private:
-//	std::string 		data;
-	t_list 				*data;
+	Node				*data;
 
 public:
-
 	char 				buffer[BUFFSIZE];
 	Storage();
 	Storage(const Storage &other);
 	Storage			&operator=(const Storage &other);
 	~Storage();
 
-	t_list					 *getData() const;
-	void 					setData(char *content);
+	Node					 *getData() const;
+	void 					setData();
 	void 					clearBuffer();
+	void					addNewNode();
+	void 					printNodes();
 
 };
 

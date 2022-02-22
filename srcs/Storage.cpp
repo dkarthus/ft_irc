@@ -21,16 +21,43 @@ Storage::~Storage()
 
 }
 
+void Storage::addNewNode() {
+	Node *new_node = new Node(std::string(this->buffer));
+	Node *temp;
 
-void Storage::setData(char *content)
+	temp = data;
+	if (temp)
+	{
+		while (temp->next != NULL)
+		{
+			temp = temp->next;
+		}
+		temp->next = new_node;
+		new_node->prev = temp;
+	}
+	else
+	{
+		data = new_node;
+	}
+}
+
+void Storage::setData()
 {
-	t_list 		*temp;
-
-	temp = ft_lstnew(content);
-	ft_lstadd_back(&data, temp);
+	addNewNode();
 	Storage::clearBuffer();
 }
 
+void Storage::printNodes() {
+	Node		*temp;
+
+	int count = 0;
+	temp = data;
+	while (temp){
+		std::cout << "node " << count << " - data: " << temp->command << std::endl;
+		temp = temp->next;
+		count++;
+	}
+}
 
 void Storage::clearBuffer()
 {
@@ -40,7 +67,7 @@ void Storage::clearBuffer()
 	}
 }
 
-t_list *Storage::getData() const
+Node *Storage::getData() const
 {
 	return data;
 }

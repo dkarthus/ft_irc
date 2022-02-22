@@ -54,7 +54,6 @@ void Server::startSocket(Socket &serv_socket)
 		/* they will inherit that state from the listening socket.   */
 		/*************************************************************/
 		rc = fcntl(listen_sd, F_SETFL, O_NONBLOCK);
-//		rc = ioctl(listen_sd, FIONBIO, (char *)&on);
 		if (rc < 0)
 		{
 			perror("fcntl() failed");
@@ -147,8 +146,6 @@ void Server::pollConnections(int listenSocket)
 			if (fds[i].revents != POLLIN)
 			{
 				printf("  Error! revents = %d\n", fds[i].revents);
-//				endServer = TRUE;
-//				break;
                 closeConn = TRUE;
 			}
 			if (fds[i].fd == listenSocket)
@@ -189,11 +186,9 @@ void Server::pollConnections(int listenSocket)
 					len = rc;
 					printf("  %d bytes received\n", len);
 					rc = send(fds[i].fd, storage[i].buffer, len, 0);
-//					std::cout << "Printing buffer" << std::endl;
-//					std::cout << storage[i].buffer << std::endl;
-					storage[i].setData(storage[i].buffer);
+					storage[i].setData();
 					std::cout << "Printing data" << std::endl;
-					ft_lst_print(storage[i].getData());
+					storage[i].printNodes();
 					if (rc < 0)
 					{
 						perror("  send() failed");
