@@ -124,6 +124,7 @@ void Server::pollConnections(int listenSocket)
 	int 			len;
 	int 			compressArray = FALSE;
 	int				count;
+	Responser		response;
 
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
@@ -167,6 +168,7 @@ void Server::pollConnections(int listenSocket)
 				printf("  Descriptor %d is readable\n", fds[i].fd);
 				closeConn = FALSE;
 				rc = recv(fds[i].fd, storage[i].buffer, sizeof(storage[i].buffer), 0);
+				printf("Printing buffer: %s\n",storage[i].buffer);
 				if (rc < 0)
 				{
 					if (errno != EWOULDBLOCK)
@@ -185,7 +187,8 @@ void Server::pollConnections(int listenSocket)
 				{
 					len = rc;
 					printf("  %d bytes received\n", len);
-					rc = send(fds[i].fd, storage[i].buffer, len, 0);
+					response.sendMotd(fds[i].fd);
+					//rc = send(fds[i].fd, response.sendMotd().c_str(), len, 0);
 					storage[i].setData();
 					std::cout << "Printing data" << std::endl;
 					storage[i].printNodes();
