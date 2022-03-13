@@ -1,0 +1,12 @@
+# ninja log v5
+1	448	1646144021000000000	CMakeFiles/ft_irc.dir/srcs/Socket.cpp.o	2a9c346fc494e7c5
+0	563	1646144021000000000	CMakeFiles/ft_irc.dir/srcs/Node.cpp.o	89be89e5e85c9090
+2	609	1646144021000000000	CMakeFiles/ft_irc.dir/srcs/Storage.cpp.o	b88a76ac285a1669
+5	702	1646144030000000000	CMakeFiles/ft_irc.dir/srcs/utils.cpp.o	81dba09e091fa16c
+4	718	1646144030000000000	CMakeFiles/ft_irc.dir/srcs/main.cpp.o	e5ad0282e511e6a6
+4	945	1646144030000000000	CMakeFiles/ft_irc.dir/srcs/User.cpp.o	8bbf41ec96f634e2
+7	1029	1646144152000000000	CMakeFiles/ft_irc.dir/srcs/utils.cpp.o	81dba09e091fa16c
+6	1080	1646144152000000000	CMakeFiles/ft_irc.dir/srcs/main.cpp.o	e5ad0282e511e6a6
+5	1183	1646144152000000000	CMakeFiles/ft_irc.dir/srcs/User.cpp.o	8bbf41ec96f634e2
+2	1006	1646145624000000000	CMakeFiles/ft_irc.dir/srcs/Server.cpp.o	1efdb6a9c5ce456f
+1006	1088	1646145624000000000	ft_irc	f10fe8034960359e
