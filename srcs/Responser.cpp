@@ -8,9 +8,6 @@ Responser::Responser()
 	this->MOTD.push_back(this->motdstart);
 	this->MOTD.push_back(this->motd);
 	this->MOTD.push_back(this->endofmotd);
-
-
-
 }
 
 Responser::Responser(const Responser &other)
@@ -47,23 +44,18 @@ void Responser::sendResponse(int fd, int respCode)
 	ss << respCode;
 	std::string 		serverName = "IRCSERV";
 	std::string 		response = ":" + serverName + " " + ss.str() + " " + "Wiz" + " :";
-	std::cout << "Printing response" << response << std::endl;
-//	switch (respCode)
-//	{
-//		case RPL_MOTDSTART:
-//			std::cout << response;
-//			break;
-//		case RPL_MOTD:
-//			send(fd, this->motd.c_str(), this->motd.length(), 0);
-//			break;
-//		case RPL_ENDOFMOTD:
-//			send(fd, this->endofmotd.c_str(), this->endofmotd.length(), 0);
-//			break;
-//	}
+	switch (respCode)
+	{
+		case RPL_MOTDSTART:
+			response = response + "- IRCSERV Message of the day - \n";
+			break;
+		case RPL_MOTD:
+			response = response + "- IRC Welcome to server!!!\n";
+			break;
+		case RPL_ENDOFMOTD:
+			response = response + "End of /MOTD command\n";
+			break;
+	}
+//	std::cout << "Printing response" << response << std::endl;
 	send(fd, response.c_str(), response.length(), 0);
-}
-
-void Responser::processResponse()
-{
-
 }
