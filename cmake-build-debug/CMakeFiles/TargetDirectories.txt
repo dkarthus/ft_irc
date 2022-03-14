@@ -1,3 +1,0 @@
-/home/yuliya/Desktop/irc_new/ft_irc/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/yuliya/Desktop/irc_new/ft_irc/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/yuliya/Desktop/irc_new/ft_irc/cmake-build-debug/CMakeFiles/ft_irc.dir
