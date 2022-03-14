@@ -7,7 +7,7 @@
 #include <cstring>
 #include "utils.hpp"
 #include "Node.hpp"
-#define BUFFSIZE 256
+#define BUFFSIZE 510
 
 class Storage
 {

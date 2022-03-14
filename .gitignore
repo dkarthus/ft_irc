@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+.idea
+server
+client
+cmake-build-debug
+IRC-server
+sandboxServ
+bircd
+ircserv
