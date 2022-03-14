@@ -169,28 +169,29 @@ void Server::pollConnections(int listenSocket)
 				closeConn = FALSE;
 				rc = recv(fds[i].fd, storage[i].buffer, sizeof(storage[i].buffer), 0);
 				printf("Printing buffer: %s\n",storage[i].buffer);
-				if (rc < 0)
+                if (rc < 0)
 				{
-					if (errno != EWOULDBLOCK)
+                    if (errno != EWOULDBLOCK)
 					{
-						perror("  recv() failed");
-						closeConn = TRUE;
-					}
-				}
-				if (rc == 0)
+                        perror("  recv() failed");
+                        closeConn = TRUE;
+                    }
+                }
+                if (rc == 0)
 				{
-					closeConn = TRUE;
-					printf("  Connection closed\n");
-					printf("  Descriptor %d closed\n", fds[i].fd);
-				}
+                    closeConn = TRUE;
+                    printf("  Connection closed\n");
+                    printf("  Descriptor %d closed\n", fds[i].fd);
+                }
 				else
 				{
-					len = rc;
-					printf("  %d bytes received\n", len);
-					response.sendMotd(fds[i].fd);
-					//rc = send(fds[i].fd, response.sendMotd().c_str(), len, 0);
-					storage[i].setData();
-					std::cout << "Printing data" << std::endl;
+                    len = rc;
+                    printf("  %d bytes received\n", len);
+                    response.sendMotd(fds[i].fd);
+                    //rc = send(fds[i].fd, response.sendMotd().c_str(), len, 0);
+                    storage[i].setData();
+                    user.parse_message(storage[i].getData());
+                    std::cout << "Printing data" << std::endl;
 					storage[i].printNodes();
 					if (rc < 0)
 					{

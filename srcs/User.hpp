@@ -33,7 +33,7 @@ public:
 
 
     User();
-    void parse_message(Node mes);
+    void parse_message(Node *mes);
     const std::queue<std::string>   &getMessage() const;
     void setPassword(std::string password);
     void setNickname(std::string nickname);

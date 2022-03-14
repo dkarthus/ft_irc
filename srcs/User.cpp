@@ -27,8 +27,8 @@ std::queue<std::string>	split(const std::string &s, char sep, bool include)
     return ret;
 }
 
-void User::parse_message(Node mes) {
-    std::string text = mes.getCommand();
+void User::parse_message(Node *mes) {
+    std::string text = mes->getCommand();
     if (text.length() > 512)
         text = text.substr(0, 510) + "\r\n";
     while (text.find("\r\n") != std::string::npos)
