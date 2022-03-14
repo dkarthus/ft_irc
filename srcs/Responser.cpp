@@ -40,3 +40,30 @@ void 			Responser::sendMotd(int fd) const
 		send(fd, this->MOTD[i].c_str(), this->MOTD[i].length(), 0);
 	}
 }
+
+void Responser::sendResponse(int fd, int respCode)
+{
+	std::stringstream	ss;
+	ss << respCode;
+	std::string 		serverName = "IRCSERV";
+	std::string 		response = ":" + serverName + " " + ss.str() + " " + "Wiz" + " :";
+	std::cout << "Printing response" << response << std::endl;
+//	switch (respCode)
+//	{
+//		case RPL_MOTDSTART:
+//			std::cout << response;
+//			break;
+//		case RPL_MOTD:
+//			send(fd, this->motd.c_str(), this->motd.length(), 0);
+//			break;
+//		case RPL_ENDOFMOTD:
+//			send(fd, this->endofmotd.c_str(), this->endofmotd.length(), 0);
+//			break;
+//	}
+	send(fd, response.c_str(), response.length(), 0);
+}
+
+void Responser::processResponse()
+{
+
+}

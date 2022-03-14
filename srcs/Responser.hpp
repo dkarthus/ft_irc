@@ -1,6 +1,7 @@
 #ifndef RESPONSER_HPP
 #define RESPONSER_HPP
 
+#include <sstream>
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
@@ -18,6 +19,10 @@
 #include "Socket.hpp"
 #include "Storage.hpp"
 #include "utils.hpp"
+#define RPL_MOTD		372
+#define RPL_MOTDSTART	375
+#define RPL_ENDOFMOTD	376
+#define SERVER_NAME		"IRCSERV"
 
 class Responser {
 private:
@@ -34,6 +39,8 @@ public:
 
 	std::string 		getMotd() const;
 	void 				sendMotd(int fd) const;
+	void				processResponse();
+	void				sendResponse(int fd, int response);
 
 
 
