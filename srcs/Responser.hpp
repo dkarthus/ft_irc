@@ -38,7 +38,7 @@ public:
 	~Responser();
 
 	std::string 		getMotd() const;
-	void 				sendMotd(int fd) const;
+	void 				sendMotd(int fd);
 	void				processResponse();
 	void				sendResponse(int fd, int response);
 

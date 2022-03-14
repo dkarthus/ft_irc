@@ -187,9 +187,7 @@ void Server::pollConnections(int listenSocket)
 				{
                     len = rc;
                     printf("  %d bytes received\n", len);
-					response.sendResponse(fds[i].fd, RPL_MOTDSTART);
-					response.sendResponse(fds[i].fd, RPL_MOTD);
-					response.sendResponse(fds[i].fd, RPL_ENDOFMOTD);
+					response.sendMotd(fds[i].fd);
                     storage[i].setData();
                     user.parse_message(storage[i].getData());
                     std::cout << "Printing data" << std::endl;
