@@ -188,6 +188,7 @@ void Server::pollConnections(int listenSocket)
                     len = rc;
                     printf("  %d bytes received\n", len);
 					response.sendMotd(fds[i].fd);
+					//response.sendError(fds[i].fd, ERR_NEEDMOREPARAMS, "PASS");
                     storage[i].setData();
                     user.parse_message(storage[i].getData());
                     std::cout << "Printing data" << std::endl;

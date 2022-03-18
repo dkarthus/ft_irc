@@ -19,17 +19,24 @@
 #include "Socket.hpp"
 #include "Storage.hpp"
 #include "utils.hpp"
-#define RPL_MOTD		372
-#define RPL_MOTDSTART	375
-#define RPL_ENDOFMOTD	376
+#define RPL_MOTD				372
+#define RPL_MOTDSTART			375
+#define RPL_ENDOFMOTD			376
+#define ERR_NEEDMOREPARAMS		461
+#define ERR_NONICKNAMEGIVEN		431
+#define ERR_NICKNAMEINUSE		433
+#define ERR_ERRONEUSNICKNAME	432
+#define ERR_NICKCOLLISION		436
+#define ERR_ALREADYREGISTRED	462
+#define ERR_NORECIPIENT			411
+#define ERR_CANNOTSENDTOCHAN	404
+#define ERR_NOSUCHNICK			401
+#define RPL_AWAY				301
+#define ERR_NOTEXTTOSEND		412
 #define SERVER_NAME		"IRCSERV"
 
 class Responser {
 private:
-	std::string 		motdstart;
-	std::string 		motd;
-	std::string 		endofmotd;
-	std::vector<std::string>		MOTD;
 
 public:
 	Responser();
@@ -37,10 +44,10 @@ public:
 	Responser		&operator=(const Responser &other);
 	~Responser();
 
-	std::string 		getMotd() const;
 	void 				sendMotd(int fd);
 	void				processResponse();
 	void				sendResponse(int fd, int response);
+	void				sendError(int fd, int error, const std::string& command);
 
 
 
