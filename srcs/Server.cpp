@@ -112,23 +112,6 @@ void Server::initFdStruct(int socket)
 	timeout = (30 * 60 * 1000);
 }
 
-//void	Server::logMessage(const Message &msg)
-//{
-//    std::cout << std::endl << "prefix = " << msg.getPrefix() << ", command = " << msg.getCommand();
-//    std::cout << ", paramsCount = " << msg.getParams().size() << std::endl;
-//    const std::vector<std::string>	params = msg.getParams();
-//    size_t	paramsSize = params.size();
-//    for (size_t i = 0; i < paramsSize; i++)
-//    {
-//        if (i == 0)
-//            std::cout << "Params list: \"" << params[i] << "\"";
-//        else
-//            std::cout << ", \"" << params[i] << "\"";
-//        if (i == (paramsSize - 1))
-//            std::cout << std::endl;
-//    }
-//    std::cout << std::endl;
-//}
 int	Server::check_error(const std::string command){
     if (command != "PASS" && command != "USER" && command != "NICK")
         return(NOTREGISTERED);
@@ -222,6 +205,7 @@ void Server::pollConnections(int listenSocket)
                         if (check_error(msg.getCommand()) == NOTREGISTERED)
                             std::cout << ":You have not registered" << std::endl;
                     }
+//                    user.setParametrs();
                     response.sendMotd(fds[i].fd);
                     std::cout << "Printing data" << std::endl;
 					storage[i].printNodes();

@@ -1,6 +1,11 @@
 #include "Message.hpp"
 #include "queue"
 
+Message::~Message()
+{}
+Message::Message(){
+
+}
 std::queue<std::string>	ssplit(const std::string &s, char sep, bool include)
 {
     std::queue<std::string>	ret;
@@ -26,11 +31,6 @@ Message::Message(const std::string &str)
 {
     std::string	strWithoutNL = std::string(str.begin(), str.end() - 1);
     std::queue<std::string>	que = ssplit(strWithoutNL, ' ', false);
-    if (que.size() > 0 && que.front()[0] == ':')
-    {
-        prefix = std::string(que.front().begin() + 1, que.front().end());
-        que.pop();
-    }
     if (que.size() > 0)
     {
         command = que.front();
@@ -59,20 +59,13 @@ Message::Message(const std::string &str)
     }
 }
 
-const std::string	&Message::getPrefix() const
-{
-    return prefix;
-}
-
-const std::string	&Message::getCommand() const
-{
+const std::string	&Message::getCommand() const{
     return command;
 }
 
-const std::vector<std::string>	&Message::getParams() const
+const std::vector<std::string>	&Message::getParameters() const
 {
     return parameters;
 }
 
-Message::~Message()
-{}
+

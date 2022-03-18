@@ -6,6 +6,7 @@
 
 #include "Storage.hpp"
 #include "Socket.hpp"
+#include "Message.hpp"
 #include <arpa/inet.h>
 #include <cerrno>
 #include <cstdlib> // For exit() and EXIT_FAILURE
@@ -25,14 +26,13 @@
 #include <algorithm>
 
 
-
 class User {
 public:
     std::queue<std::string>				message;
     Storage				                storage;
-    std::string						prefix;
-    std::string						command;
-    std::vector<std::string>		parameters;
+    std::string						    prefix;
+    std::string						    command;
+    std::vector<std::string>		    parameters;
 
 
     User();
@@ -41,8 +41,8 @@ public:
     void setPassword(std::string password);
     void setNickname(std::string nickname);
     void setHostname(std::string hostname);
+//    void setParametrs(const Message &msg);
 
-private:
     std::string							password;
     std::string							nickname;
     std::string							username;
