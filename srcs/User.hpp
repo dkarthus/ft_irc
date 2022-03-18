@@ -30,6 +30,9 @@ class User {
 public:
     std::queue<std::string>				message;
     Storage				                storage;
+    std::string						prefix;
+    std::string						command;
+    std::vector<std::string>		parameters;
 
 
     User();
@@ -38,7 +41,6 @@ public:
     void setPassword(std::string password);
     void setNickname(std::string nickname);
     void setHostname(std::string hostname);
-
 
 private:
     std::string							password;

@@ -112,6 +112,28 @@ void Server::initFdStruct(int socket)
 	timeout = (30 * 60 * 1000);
 }
 
+//void	Server::logMessage(const Message &msg)
+//{
+//    std::cout << std::endl << "prefix = " << msg.getPrefix() << ", command = " << msg.getCommand();
+//    std::cout << ", paramsCount = " << msg.getParams().size() << std::endl;
+//    const std::vector<std::string>	params = msg.getParams();
+//    size_t	paramsSize = params.size();
+//    for (size_t i = 0; i < paramsSize; i++)
+//    {
+//        if (i == 0)
+//            std::cout << "Params list: \"" << params[i] << "\"";
+//        else
+//            std::cout << ", \"" << params[i] << "\"";
+//        if (i == (paramsSize - 1))
+//            std::cout << std::endl;
+//    }
+//    std::cout << std::endl;
+//}
+int	Server::check_error(const std::string command){
+    if (command != "PASS" && command != "USER" && command != "NICK")
+        return(NOTREGISTERED);
+}
+
 void Server::pollConnections(int listenSocket)
 {
 	int 			rc;
@@ -187,10 +209,20 @@ void Server::pollConnections(int listenSocket)
 				{
                     len = rc;
                     printf("  %d bytes received\n", len);
-                    response.sendMotd(fds[i].fd);
+//                    response.sendMotd(fds[i].fd);
                     //rc = send(fds[i].fd, response.sendMotd().c_str(), len, 0);
                     storage[i].setData();
                     user.parse_message(storage[i].getData());
+                    while (user.getMessage().size() > 0 && user.getMessage().front()[user.getMessage().front().size() - 1] == '\n') {
+                        //достаем по порядку команды и делим на command и parametrs
+                        Message msg(user.getMessage().front());
+                        //удаляем из user записанный message
+                        if (user.getMessage().size() > 0)
+                            user.message.pop();
+                        if (check_error(msg.getCommand()) == NOTREGISTERED)
+                            std::cout << ":You have not registered" << std::endl;
+                    }
+                    response.sendMotd(fds[i].fd);
                     std::cout << "Printing data" << std::endl;
 					storage[i].printNodes();
 					if (rc < 0)
@@ -244,6 +276,3 @@ void Server::printFds()
 		printf("fd: %d, ", fds[i].fd);
 	}
 }
-
-
-

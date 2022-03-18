@@ -1,6 +1,7 @@
 #ifndef RESPONSER_HPP
 #define RESPONSER_HPP
 
+#include <sstream>
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
@@ -18,22 +19,29 @@
 #include "Socket.hpp"
 #include "Storage.hpp"
 #include "utils.hpp"
+#define RPL_MOTD		372
+#define RPL_MOTDSTART	375
+#define RPL_ENDOFMOTD	376
+#define SERVER_NAME		"IRCSERV"
+#define NOTREGISTERED   451
 
 class Responser {
 private:
-	std::string 		motdstart;
-	std::string 		motd;
-	std::string 		endofmotd;
-	std::vector<std::string>		MOTD;
+    std::string 		motdstart;
+    std::string 		motd;
+    std::string 		endofmotd;
+    std::vector<std::string>		MOTD;
 
 public:
-	Responser();
-	Responser(const Responser &other);
-	Responser		&operator=(const Responser &other);
-	~Responser();
+    Responser();
+    Responser(const Responser &other);
+    Responser		&operator=(const Responser &other);
+    ~Responser();
 
-	std::string 		getMotd() const;
-	void 				sendMotd(int fd) const;
+    std::string 		getMotd() const;
+    void 				sendMotd(int fd);
+    void				processResponse();
+    void				sendResponse(int fd, int response);
 
 
 

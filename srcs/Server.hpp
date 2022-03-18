@@ -25,6 +25,7 @@
 #define TRUE 1
 #define FALSE 0
 #define FD_SIZE 10
+#include "Message.hpp"
 
 class Server
 {
@@ -43,7 +44,9 @@ public:
 	void 			listenConnections(int socket);
 	void 			initFdStruct(int socket);
 	void 			pollConnections(int socket);
+    int	check_error(const std::string message);
 	void			printFds();
+
 };
 
 #endif
