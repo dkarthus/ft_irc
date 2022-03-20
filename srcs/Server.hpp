@@ -42,7 +42,7 @@ public:
 	void 			listenConnections(int socket);
 	void 			initFdStruct(int socket);
 	void 			pollConnections(int socket);
-    int	check_error(const std::string message);
+    int	check_error(const std::string message, std::vector<std::string> param);
 	void			printFds();
 
 };

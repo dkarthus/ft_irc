@@ -1,4 +1,6 @@
 #include "Responser.hpp"
+#include <sstream>
+#include <iostream>
 
 Responser::Responser()
 {

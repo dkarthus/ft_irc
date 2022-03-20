@@ -40,13 +40,12 @@ public:
     const std::queue<std::string>   &getMessage() const;
     void setPassword(std::string password);
     void setNickname(std::string nickname);
-    void setHostname(std::string hostname);
-//    void setParametrs(const Message &msg);
+    void setUserName(std::string username);
+    void setRegister();
 
     std::string							password;
     std::string							nickname;
     std::string							username;
-    std::string							hostname;
 
 
 };

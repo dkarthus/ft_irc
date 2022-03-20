@@ -43,11 +43,10 @@ const std::queue<std::string>	&User::getMessage() const
 	return message;
 }
 
-//void User::setParametrs(const Message &msg){
-//    setPassword(msg.getParameters()[0]);
-//    setNickname(msg.getParameters()[1]);
-//    setHostname(msg.getParameters()[2]);
-//}
+void User::setRegister(){
+
+
+}
 
 void User::setPassword(std::string password){
     this->password = password;
@@ -55,6 +54,6 @@ void User::setPassword(std::string password){
 void User::setNickname(std::string nickname){
     this->nickname = nickname;
 }
-void User::setHostname(std::string hostname){
-    this->hostname = hostname;
+void User::setUserName(std::string username){
+    this->username = username;
 }
