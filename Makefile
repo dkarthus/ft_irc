@@ -7,7 +7,8 @@ SRCS =		srcs/main.cpp \
 			srcs/utils.cpp \
 			srcs/Node.cpp \
 			srcs/Responser.cpp\
-			srcs/User.cpp
+			srcs/User.cpp \
+			srcs/Privmsg.cpp
 
 OBJ = $(patsubst %.cpp, %.o, $(SRCS))
 
@@ -21,7 +22,8 @@ INCLUDE =	srcs/Server.hpp \
 			srcs/utils.hpp \
 			srcs/Node.hpp \
 			srcs/Responser.hpp\
-			srcs/User.hpp
+			srcs/User.hpp \
+			srcs/Privmsg.hpp
 
 
 

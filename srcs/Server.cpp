@@ -189,6 +189,11 @@ void Server::pollConnections(int listenSocket)
                     printf("  %d bytes received\n", len);
 					response.sendMotd(fds[i].fd);
 					//response.sendError(fds[i].fd, ERR_NEEDMOREPARAMS, "PASS");
+//					sendPrivmsg(fds[i].fd, storage[i].buffer);
+					sendPrivmsg(fds[i].fd, "PRIVMSG aizhan :response1");
+					sendPrivmsg(fds[i].fd, "PRIVMSG fox :response2");
+					sendPrivmsg(fds[i].fd, "fox PRIVMSG aizhan :response3");
+					sendPrivmsg(fds[i].fd, "aizhan PRIVMSG fox :response4");
                     storage[i].setData();
                     user.parse_message(storage[i].getData());
                     std::cout << "Printing data" << std::endl;
