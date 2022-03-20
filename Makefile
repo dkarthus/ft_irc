@@ -1,33 +1,46 @@
-NAME	= irc-server
+NAME = ircserv
 
-FLAGS	= -Wall -Wextra -Werror -std=c++98
+SRCS =		srcs/main.cpp \
+			srcs/Server.cpp \
+			srcs/Socket.cpp \
+			srcs/Storage.cpp \
+			srcs/utils.cpp \
+			srcs/Node.cpp \
+			srcs/Responser.cpp\
+			srcs/User.cpp
 
-SRC_FLD	= srcs/
+OBJ = $(patsubst %.cpp, %.o, $(SRCS))
 
-CPPS	= server.cpp main.cpp
+CC = c++
 
-SOURCE	= $(addprefix $(SRC_FLDR), $(CPPS))
+FLAGS = #-Wall -Wextra -Werror
 
-HPPS	= server.hpp
+INCLUDE =	srcs/Server.hpp \
+			srcs/Socket.hpp \
+			srcs/Storage.hpp \
+			srcs/utils.hpp \
+			srcs/Node.hpp \
+			srcs/Responser.hpp\
+			srcs/User.hpp
 
-INCLUDE	= $(addprefix $(SRC_FLDR), $(HPPS))
 
-OBJS	= $(SOURCE:%.cpp=%.o)
 
-.PHONY:	all clean fclean re
+RM = rm -f
 
-all: $(NAME)
+all: $(NAME) $(INCLUDE)
 
-$(SRC_FLD)%.o: $(SRC_FLD)%.cpp $(INCLUDE)
-	clang++ $(FLAGS) -c $< -o $@ -I $(SRC_FLD)
+$(NAME): $(OBJ) $(INCLUDE)
+			$(CC) $(FLAGS) $(OBJ) -std=c++98 -o $(NAME)
 
-$(NAME): $(OBJS) $(INCLUDE)
-	clang++ $(FLAGS) $(OBJS) -o $(NAME)
+%.o : %.cpp
+			$(CC) $(FLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+			${RM} ${OBJ}
 
 fclean: clean
-	rm -f $(NAME)
+			$(RM) -rf $(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re
