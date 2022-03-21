@@ -1,7 +1,6 @@
 #ifndef RESPONSER_HPP
 #define RESPONSER_HPP
 
-#include <sstream>
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
@@ -33,7 +32,7 @@
 #define ERR_NOSUCHNICK			401
 #define RPL_AWAY				301
 #define ERR_NOTEXTTOSEND		412
-#define SERVER_NAME		"IRCSERV"
+#define NOTREGISTERED   451
 
 class Responser {
 private:

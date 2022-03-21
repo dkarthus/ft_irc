@@ -1,6 +1,7 @@
 #include "User.hpp"
 
 #include <iostream>
+
 User::User()
 {
 
@@ -35,42 +36,6 @@ void User::parse_message(Node *mes) {
         text.replace(text.find("\r\n"), 2, "\n");
     if (text.size() > 1)
         message = split(text, '\n', true);
-
-    // std::string str = getMessage()
-    
-
-    // std::string	strWithoutNL = std::string(str.begin(), str.end() - 1);
-    // std::queue<std::string>	que = split(strWithoutNL, ' ', false);
-    // if (que.size() > 0 && que.front()[0] == ':')
-    // {
-    //     prefix = std::string(que.front().begin() + 1, que.front().end());
-    //     que.pop();
-    // }
-    // if (que.size() > 0)
-    // {
-    //     command = que.front();
-    //     que.pop();
-    // }
-    // while (que.size() > 0)
-    // {
-    //     if (que.front()[0] == ':')
-    //     {
-    //         std::string	s(que.front().begin() + 1, que.front().end());
-    //         que.pop();
-    //         while (que.size() > 0)
-    //         {
-    //             s.append(" ");
-    //             s.append(que.front());
-    //             que.pop();
-    //         }
-    //         parameters.push_back(s);
-    //     }
-    //     else
-    //     {
-    //         parameters.push_back(que.front());
-    //         que.pop();
-    //     }
-    // }
 }
 
 const std::queue<std::string>	&User::getMessage() const
@@ -78,13 +43,17 @@ const std::queue<std::string>	&User::getMessage() const
 	return message;
 }
 
-//
-//void User::setPassword(std::string password){
-//    this->password = password;
-//}
-//void User::setNickname(std::string nickname){
-//    this->nickname = nickname;
-//}
-//void User::setHostname(std::string hostname){
-//    this->hostname = hostname;
-//}
+void User::setRegister(){
+
+
+}
+
+void User::setPassword(std::string password){
+    this->password = password;
+}
+void User::setNickname(std::string nickname){
+    this->nickname = nickname;
+}
+void User::setUserName(std::string username){
+    this->username = username;
+}
