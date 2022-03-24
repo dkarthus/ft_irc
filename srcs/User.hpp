@@ -28,27 +28,45 @@
 
 class User {
 public:
-    std::queue<std::string>				message;
-    Storage				                storage;
-    std::string						    prefix;
-    std::string						    command;
-    std::vector<std::string>		    parameters;
+    //Storage				                storage;
+    //std::string						    prefix;
+    //std::string						    command;
+    //std::vector<std::string>		    parameters;
 
+    User(int sockfd, const std::string& nName);
+    User(int sockfd, const std::string& nName, const std::string& hName);
+    User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName);
+    User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName, const std::string& rName);
+    ~User();
+    //void parse_message(Node *mes);
 
-    User();
+    //setters
+	void								setPassword(const std::string &pass);
+	void								setUsername(const std::string &uName);
+	void								setHostname(const std::string &hName);
+	void								setNickname(const std::string &nName);
+	void								setRealname(const std::string &rName);
+
+    //geters
+    const std::queue<std::string>		&getMessages() const;
+    const std::string					&getUsername() const;
+    const std::string					&getHostname() const;
+	const std::string					&getNickname() const;
+	const std::string					&getRealname() const;
+	const std::string					&getPassword() const;
+    int	                                getSockfd() const;
+
+    //methods
     void parse_message(Node *mes);
-    const std::queue<std::string>   &getMessage() const;
-    void setPassword(std::string password);
-    void setNickname(std::string nickname);
-    void setHostname(std::string hostname);
-//    void setParametrs(const Message &msg);
 
+private:
+    int                                 sockfd;
     std::string							password;
     std::string							nickname;
     std::string							username;
     std::string							hostname;
-
-
+    std::string                         realname;
+    std::queue<std::string>				message;
 };
 
 #endif

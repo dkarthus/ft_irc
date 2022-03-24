@@ -25,13 +25,16 @@
 #define FD_SIZE 10
 #include "Message.hpp"
 
+bool killswitch = true;
+
 class Server
 {
 private:
 	struct pollfd		fds[FD_SIZE];
 	int 				timeout;
 	Storage				storage[FD_SIZE];
-    User user;
+	std::vector<User*>	user;
+
 public:
 	Server();
 	Server(const Server &other);
