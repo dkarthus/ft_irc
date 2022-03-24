@@ -38,7 +38,6 @@ public:
     User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName);
     User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName, const std::string& rName);
     ~User();
-    //void parse_message(Node *mes);
 
     //setters
 	void								setPassword(const std::string &pass);
