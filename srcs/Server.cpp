@@ -138,13 +138,14 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
         int count;
         Responser response;
 
+
 	/*************************************************************/
 	/* Loop waiting for incoming connects or for incoming data   */
 	/* on any of the connected sockets.                          */
 	/*************************************************************/
 	for (;;)
 	{
-		printf("Waiting on poll()...\n");
+		printf("...\n");
 		rc = poll(fds, nfds, timeout);
 		if (rc <= 0)
 		{
@@ -163,55 +164,88 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
 			}
 			if (fds[i].fd == listenSocket)
 			{
-				printf("  Listening socket is readable\n");
+//				printf("  Listening socket is readable\n");
 				newSocket = accept(listenSocket, NULL, NULL);
 				if (newSocket < 0)
 				{
 					if (errno != EWOULDBLOCK)
 						perror("  accept() failed");
 				}
-				printf("  New incoming connection - %d\n", newSocket);
+				//printf("  New incoming connection - %d\n", newSocket);
 				fds[nfds].fd = newSocket;
 				fds[nfds].events = POLLIN;
 				nfds++;
 			}
 			else
 			{
-				printf("  Descriptor %d is readable\n", fds[i].fd);
+				//printf("  Descriptor %d is readable\n", fds[i].fd);
 				closeConn = FALSE;
 				rc = recv(fds[i].fd, storage[i].buffer, sizeof(storage[i].buffer), 0);
-				printf("Printing buffer: %s\n",storage[i].buffer);
+				//printf("Printing buffer: %s\n",storage[i].buffer);
                 if (rc < 0)
 				{
-                    if (errno != EWOULDBLOCK)
+					if (errno != EWOULDBLOCK)
 					{
-                        perror("  recv() failed");
-                        closeConn = TRUE;
-                    }
-                }
-                if (rc == 0)
-				{
-                    closeConn = TRUE;
-                    printf("  Connection closed\n");
-                    printf("  Descriptor %d closed\n", fds[i].fd);
-                }
-				else
-				{
-                    len = rc;
-                    printf("  %d bytes received\n", len);
-					response.sendMotd(fds[i].fd);
-					//response.sendError(fds[i].fd, ERR_NEEDMOREPARAMS, "PASS");
-//					sendPrivmsg(fds[i].fd, storage[i].buffer);
-                    storage[i].setData();
-                    user.parse_message(storage[i].getData());
-                    std::cout << "Printing data" << std::endl;
-					storage[i].printNodes();
-					if (rc < 0)
-					{
-						perror("  send() failed");
+						perror("  recv() failed");
 						closeConn = TRUE;
 					}
-					printf("  Has sent data to %d descriptor\n", fds[i].fd);
+				}
+				if (rc == 0)
+				{
+					closeConn = TRUE;
+					printf("  Connection closed\n");
+					printf("  Descriptor %d closed\n", fds[i].fd);
+				}
+				else
+				{
+					printf("From fd [%d] received a message '%s'\n", fds[i].fd, storage[i].buffer);
+					std::string incomingMSG (storage[i].buffer);
+					if (incomingMSG.find("PRIVMSG") != std::string::npos) {
+						std::cout << "PRIVMSG was detected!" << std::endl;
+						// send response to Client:
+						int sentTo = fds[i].fd == 4 ? 5 : 4;
+						int sentFrom = sentTo == 4 ? 5 : 4;
+						std::string nickFrom = (incomingMSG.find("azat") != std::string::npos) ? ("aizhan") : ("azat");
+						std::string nickTo = nickFrom == ("azat") ? ("aizhan") : ("azat");
+						std::cout << "nickFrom:" << nickFrom << std::endl;
+						std::cout << "nickTo:" << nickTo << std::endl;
+						std::string myMessage = ":" + nickFrom + "!oem@127.0.0.1" + " PRIVMSG " + nickTo + " :Hello\n";
+
+						std::cout << "TO fd [" << sentTo <<  "] send a message '" << myMessage << "'" << std::endl;
+						send(sentTo, myMessage.c_str(), myMessage.length(), 0);
+					}
+					storage[i].setData();
+					len = rc;
+					//printf("  %d bytes received\n", len);
+//                    response.sendMotd(fds[i].fd);
+					//rc = send(fds[i].fd, response.sendMotd().c_str(), len, 0);
+
+					user.parse_message(storage[i].getData());
+					while (user.getMessage().size() > 0 &&
+						   user.getMessage().front()[user.getMessage().front().size() - 1] == '\n') {
+						//достаем по порядку команды и делим на command и parametrs
+						Message msg(user.getMessage().front());
+						//удаляем из user записанный message
+						if (user.getMessage().size() > 0)
+							user.message.pop();
+						if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED)
+							std::cout << ":You have not registered" << std::endl;
+					}
+//                    user.setParametrs();
+					if (incomingMSG.find("NICK") != std::string::npos)
+					{
+						int sentTo = fds[i].fd;
+						std::string nickTo = (incomingMSG.find("azat") != std::string::npos) ? ("azat") : ("aizhan");
+						response.sendMotd(fds[i].fd, nickTo);
+					}
+//					sendPrivmsg(fds[i].fd, storage[i].buffer);
+					//std::cout << "Printing data" << std::endl;
+//					storage[i].printNodes();
+//					if (rc < 0) {
+//						perror("  send() failed");
+//						closeConn = TRUE;
+//					}
+					//printf("  Has sent data to %d descriptor\n", fds[i].fd);
 				}
 				if (closeConn)
 				{
@@ -223,88 +257,6 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
 			}
 			}  /* End of existing connection is readable             */
 		} /* End of loop through pollable descriptors              */
-        /*************************************************************/
-        /* Loop waiting for incoming connects or for incoming data   */
-        /* on any of the connected sockets.                          */
-        /*************************************************************/
-        for (;;) {
-            printf("Waiting on poll()...\n");
-            rc = poll(fds, nfds, timeout);
-            if (rc <= 0) {
-                perror("  poll() failed or timed out.  End program.\n");
-                break;
-            }
-            currentSize = nfds;
-            for (i = 0; i < currentSize; i++) {
-                if (fds[i].revents == 0)
-                    continue;
-                if (fds[i].revents != POLLIN) {
-                    printf("  Error! revents = %d\n", fds[i].revents);
-                    closeConn = TRUE;
-                }
-                if (fds[i].fd == listenSocket) {
-                    printf("  Listening socket is readable\n");
-                    newSocket = accept(listenSocket, NULL, NULL);
-                    if (newSocket < 0) {
-                        if (errno != EWOULDBLOCK)
-                            perror("  accept() failed");
-                    }
-                    printf("  New incoming connection - %d\n", newSocket);
-                    fds[nfds].fd = newSocket;
-                    fds[nfds].events = POLLIN;
-                    nfds++;
-                } else {
-                    printf("  Descriptor %d is readable\n", fds[i].fd);
-                    closeConn = FALSE;
-                    rc = recv(fds[i].fd, storage[i].buffer, sizeof(storage[i].buffer), 0);
-                    printf("Printing buffer: %s\n", storage[i].buffer);
-                    if (rc < 0) {
-                        if (errno != EWOULDBLOCK) {
-                            perror("  recv() failed");
-                            closeConn = TRUE;
-                        }
-                    }
-                    if (rc == 0) {
-                        closeConn = TRUE;
-                        printf("  Connection closed\n");
-                        printf("  Descriptor %d closed\n", fds[i].fd);
-                    } else {
-                        len = rc;
-                        printf("  %d bytes received\n", len);
-//                    response.sendMotd(fds[i].fd);
-                        //rc = send(fds[i].fd, response.sendMotd().c_str(), len, 0);
-                        storage[i].setData();
-                        user.parse_message(storage[i].getData());
-                        while (user.getMessage().size() > 0 &&
-                               user.getMessage().front()[user.getMessage().front().size() - 1] == '\n') {
-                            //достаем по порядку команды и делим на command и parametrs
-                            Message msg(user.getMessage().front());
-                            //удаляем из user записанный message
-                            if (user.getMessage().size() > 0)
-                                user.message.pop();
-                            if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED)
-                                std::cout << ":You have not registered" << std::endl;
-                        }
-//                    user.setParametrs();
-                        response.sendMotd(fds[i].fd);
-                        std::cout << "Printing data" << std::endl;
-                        storage[i].printNodes();
-                        if (rc < 0) {
-                            perror("  send() failed");
-                            closeConn = TRUE;
-                        }
-                        printf("  Has sent data to %d descriptor\n", fds[i].fd);
-                    }
-                    if (closeConn) {
-                        printf("   Closing %d descriptor\n", fds[i].fd);
-                        close(fds[i].fd);
-                        fds[i].fd = -1;
-                        compressArray = TRUE;
-                    }
-                }
-            }  /* End of existing connection is readable             */
-        } /* End of loop through pollable descriptors              */
-
         /***********************************************************/
         /* If the compress_array flag was turned on, we need       */
         /* to squeeze together the array and decrement the number  */

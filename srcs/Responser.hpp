@@ -43,9 +43,9 @@ public:
 	Responser		&operator=(const Responser &other);
 	~Responser();
 
-	void 				sendMotd(int fd);
+	void 				sendMotd(int fd, std::string &nick);
 	void				processResponse();
-	void				sendResponse(int fd, int response);
+	void				sendResponse(int fd, int response, std::string &nick);
 	void				sendError(int fd, int error, const std::string& command);
 
 

@@ -20,11 +20,12 @@
 #include "utils.hpp"
 #include "User.hpp"
 #include "Privmsg.hpp"
+#include "Message.hpp"
 #define SERVER_PORT "3490"
 #define TRUE 1
 #define FALSE 0
 #define FD_SIZE 10
-#include "Message.hpp"
+
 
 class Server
 {
