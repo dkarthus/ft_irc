@@ -11,40 +11,44 @@
 #include <cstring>
 #include <unistd.h>
 #include <string>
-//#include <asm-generic/ioctls.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include "Socket.hpp"
 #include "Storage.hpp"
 #include "Responser.hpp"
-#include "utils.hpp"
 #include "User.hpp"
 #include "Privmsg.hpp"
 #include "Message.hpp"
-#define SERVER_PORT "3490"
 #define TRUE 1
 #define FALSE 0
 #define FD_SIZE 10
-
 
 class Server
 {
 private:
 	struct pollfd		fds[FD_SIZE];
+	int 				currentSize;
 	int 				timeout;
+	Socket				servSocket;
+
 	Storage				storage[FD_SIZE];
-    User user;
+
+	User 				user;
+
 public:
+
 	Server();
+	Server(const char *port);
 	Server(const Server &other);
 	Server			&operator=(const Server &other);
 	~Server();
 	void			startSocket(Socket &serv_socket);
-
 	void 			listenConnections(int socket);
+
+	const Socket getServSocket() const;
 	void 			initFdStruct(int socket);
 	void 			pollConnections(int socket);
-    int	check_error(const std::string message, std::vector<std::string> param);
+    int				check_error(const std::string message, std::vector<std::string> param);
 	void			printFds();
 
 };

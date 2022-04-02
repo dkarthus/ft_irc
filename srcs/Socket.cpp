@@ -2,7 +2,10 @@
 
 Socket::Socket()
 {
-	this->port = SERVER_PORT;
+}
+
+Socket::Socket(const char *customPort) : port(customPort)
+{
 	memset(&hints, 0, sizeof(hints));
 }
 
@@ -13,6 +16,10 @@ Socket::Socket(const Socket &other)
 
 Socket &Socket::operator=(const Socket &other)
 {
+	this->port = other.port;
+	this->hints = other.hints;
+	this->res = other.res;
+	this->listen_sock = other.listen_sock;
 	return (*this);
 }
 
@@ -38,7 +45,6 @@ void Socket::createAddrinfo()
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
-	// need to address port receival
 	if ((rv = getaddrinfo(NULL, this->port, &hints, &res)) != 0)
 	{
 		fprintf(stderr, "getaddrinfo server: %s\n", gai_strerror(rv));
@@ -56,7 +62,7 @@ addrinfo *Socket::getRes() const
 	return res;
 }
 
-int Socket::getListenSock()
+int Socket::getListenSock() const
 {
 	return listen_sock;
 }

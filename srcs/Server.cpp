@@ -1,10 +1,17 @@
 #include "Server.hpp"
 
-
-
 Server::Server()
 {
 
+}
+
+Server::Server(const char *port)
+{
+	servSocket = Socket(port);
+	servSocket.createAddrinfo();
+	startSocket(servSocket);
+	listenConnections(servSocket.getListenSock());
+	initFdStruct(servSocket.getListenSock());
 }
 
 Server::Server(const Server &other)
@@ -19,7 +26,14 @@ Server &Server::operator=(const Server &other)
 
 Server::~Server()
 {
-
+	/*************************************************************/
+	/* Clean up all of the sockets that are open                 */
+	/*************************************************************/
+	for (int i = 0; i < currentSize; i++)
+	{
+		if(fds[i].fd >= 10)
+			close(fds[i].fd);
+	}
 }
 
 void Server::startSocket(Socket &serv_socket)
@@ -112,7 +126,6 @@ void Server::initFdStruct(int socket)
 	/*************************************************************/
 	timeout = (30 * 60 * 1000);
 }
-
 int	Server::check_error(const std::string command, std::vector<std::string> param) {
     if (command != "PASS" && command != "USER" && command != "NICK")
         return (NOTREGISTERED);
@@ -125,10 +138,10 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
             user.setNickname(param[0]);
     }
 }
+
     void Server::pollConnections(int listenSocket) {
         int rc;
         int nfds = 1;
-        int currentSize;
         int i, j;
         int endServer = FALSE;
         int newSocket;
@@ -284,6 +297,11 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
             printf("fd: %d, ", fds[i].fd);
         }
     }
+
+const Socket Server::getServSocket() const
+{
+	return servSocket;
+}
 
 
 
