@@ -21,13 +21,13 @@ Responser::~Responser()
 
 }
 
-void Responser::sendResponse(int fd, int respCode)
+void Responser::sendResponse(int fd, int respCode, std::string &nick)
 {
 	std::stringstream	ss;
 	ss << respCode;
 	std::string 		serverName = "IRCSERV";
-	std::string 		nick;
-	std::string 		response = ":" + serverName + " " + ss.str() + " " + "Wiz" + " :";
+//	std::string 		nick;
+	std::string 		response = ":" + serverName + " " + ss.str() + " " + nick + " :";
 	switch (respCode)
 	{
 		case RPL_MOTDSTART:
@@ -42,15 +42,15 @@ void Responser::sendResponse(int fd, int respCode)
 		case RPL_AWAY:
 			response = response + nick + "  : the user is away\n";
 	}
-//	std::cout << "Printing response" << response << std::endl;
+	std::cout << "TO fd [" << fd <<  "] send a message '" << response << "'" << std::endl;
 	send(fd, response.c_str(), response.length(), 0);
 }
 
-void 			Responser::sendMotd(int fd)
+void 			Responser::sendMotd(int fd, std::string &nick)
 {
-	this->sendResponse(fd, RPL_MOTDSTART);
-	this->sendResponse(fd, RPL_MOTD);
-	this->sendResponse(fd, RPL_ENDOFMOTD);
+	this->sendResponse(fd, RPL_MOTDSTART, nick);
+	this->sendResponse(fd, RPL_MOTD, nick);
+	this->sendResponse(fd, RPL_ENDOFMOTD, nick);
 }
 
 void Responser::sendError(int fd, int errorCode, const std::string& command)

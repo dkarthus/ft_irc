@@ -1,30 +1,23 @@
 #include "Server.hpp"
 #include "Socket.hpp"
 
-int			main(int argc, char *argv[])
+int			main(int argc, const char *argv[])
 {
-	struct pollfd 			fds[200]; // need dynamic allocation
-	int    					nfds = 1, i;
-
-	Socket  				servSocket;
-	Server					ircServer;
-
-	servSocket = Socket();
-	ircServer = Server();
-	servSocket.createAddrinfo();
-	ircServer.startSocket(servSocket);
-	ircServer.listenConnections(servSocket.getListenSock());
-	ircServer.initFdStruct(servSocket.getListenSock());
-	ircServer.pollConnections(servSocket.getListenSock());
-
-
-	/*************************************************************/
-	/* Clean up all of the sockets that are open                 */
-	/*************************************************************/
-	for (i = 0; i < nfds; i++)
+	if (argc == 3)
 	{
-		if(fds[i].fd >= 10)
-			close(fds[i].fd);
+		char* p;
+		int converted = (int)strtol(argv[1], &p, 10);
+		if (*p)
+			std::cout << "Please indicate correct port" << std::endl;// conversion failed because the input wasn't a number
+		else
+		{
+			Server			ircServer = Server(argv[1]);
+			ircServer.pollConnections(ircServer.getServSocket().getListenSock());
+		}
+	}
+	else {
+		std::cout << "Wrong number of parameters" << std::endl;
+		exit(1);
 	}
 	return (0);
 }

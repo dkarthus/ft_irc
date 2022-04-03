@@ -1,6 +1,7 @@
 #ifndef SOCKET_HPP
 #define SOCKET_HPP
 #include <cstdio>
+#include <cctype>
 #include <cstdlib>
 #include <cstddef>
 #include <sys/poll.h>
@@ -10,7 +11,6 @@
 #include <cstring>
 #include <unistd.h>
 #include <string>
-//#include <asm-generic/ioctls.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include "Socket.hpp"
@@ -18,7 +18,7 @@
 #define SERVER_PORT "3490"
 #define TRUE 1
 #define FALSE 0
-//#include "Server.hpp"
+
 
 class Socket
 {
@@ -30,12 +30,13 @@ private:
 
 public:
 	Socket();
+	Socket(const char *customPort);
 	Socket(const Socket &other);
 	Socket				&operator=(const Socket &other);
 	~Socket();
 	const char 			&getPort() const;
 	addrinfo			 *getRes() const;
-	int		 			getListenSock();
+	int		 			getListenSock() const;
 	void 				setPort(const char *other_port);
 	void				createAddrinfo();
 	void 				createSocket();
