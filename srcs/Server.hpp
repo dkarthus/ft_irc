@@ -23,31 +23,33 @@
 #define FALSE 0
 #define FD_SIZE 10
 
+
 class Server
 {
 private:
-	struct pollfd		fds[FD_SIZE];
-	int 				currentSize;
-	int 				timeout;
-	Socket				servSocket;
-
-	Storage				storage[FD_SIZE];
-
-	User 				user;
-
+    Socket				servSocket;
+    Responser           responser;
+    Storage				storage[FD_SIZE];
+    User 				user;
 public:
-
 	Server();
-	Server(const char *port);
-	Server(const Server &other);
-	Server			&operator=(const Server &other);
+
+    struct pollfd		fds[FD_SIZE];
+    int                 nfds;
+    int 				timeout;
+
+    int 				currentSize;
+
+    Server(const char *port);
+    Server(const Server &other);
+    const Socket    &getServSocket() const;
+    Server			&operator=(const Server &other);
 	~Server();
 	void			startSocket(Socket &serv_socket);
 	void 			listenConnections(int socket);
 
-	const Socket getServSocket() const;
 	void 			initFdStruct(int socket);
-	void 			pollConnections(int socket);
+	int 			pollConnections(int socket);
     int				check_error(const std::string message, std::vector<std::string> param);
 	void			printFds();
 
