@@ -134,7 +134,7 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
         if (command == "PASS")
             user.setPassword(param[0]);
         else if (command == "USER")
-            user.setUserName(param[0]);
+            user.setUsername(param[0]);
         else if (command == "NICK")
             user.setNickname(param[0]);
     }
@@ -203,12 +203,12 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
                     }
                     storage[i].setData();
                     user.parse_message(storage[i].getData());
-                    while (user.getMessage().size() > 0 &&
-                           user.getMessage().front()[user.getMessage().front().size() - 1] == '\n') {
+                    while (user.getMessages().size() > 0 &&
+                           user.getMessages().front()[user.getMessages().front().size() - 1] == '\n') {
                         //достаем по порядку команды и делим на command и parametrs
-                        Message msg(user.getMessage().front());
+                        Message msg(user.getMessages().front());
                         //удаляем из user записанный message
-                        if (user.getMessage().size() > 0)
+                        if (user.getMessages().size() > 0)
                             user.message.pop();
                         if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED) {
                             std::cout << ":You have not registered" << std::endl;
@@ -221,7 +221,7 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
                     }
 //					sendPrivmsg(fds[i].fd, storage[i].buffer);
                     //std::cout << "Printing data" << std::endl;
-//					storage[i].printNodes();
+					storage[i].printNodes();
 //					if (rc < 0) {
 //						perror("  send() failed");
 //						closeConn = TRUE;

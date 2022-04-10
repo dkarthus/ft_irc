@@ -11,46 +11,41 @@
 #include <cstring>
 #include <unistd.h>
 #include <string>
+//#include <asm-generic/ioctls.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include "Socket.hpp"
 #include "Storage.hpp"
 #include "Responser.hpp"
+#include "utils.hpp"
 #include "User.hpp"
-#include "Privmsg.hpp"
-#include "Message.hpp"
+#define SERVER_PORT "3490"
 #define TRUE 1
 #define FALSE 0
 #define FD_SIZE 10
+#include "Message.hpp"
 
+bool killswitch = true;
 
 class Server
 {
 private:
-	Socket				servSocket;
-	Responser           responser;
+	struct pollfd		fds[FD_SIZE];
+	int 				timeout;
 	Storage				storage[FD_SIZE];
-	User 				user;
+	std::vector<User*>	user;
+
 public:
 	Server();
-
-	struct pollfd		fds[FD_SIZE];
-	int                 nfds;
-	int 				timeout;
-
-	int 				currentSize;
-
-	Server(const char *port);
 	Server(const Server &other);
-	const Socket    &getServSocket() const;
 	Server			&operator=(const Server &other);
 	~Server();
 	void			startSocket(Socket &serv_socket);
-	void 			listenConnections(int socket);
 
+	void 			listenConnections(int socket);
 	void 			initFdStruct(int socket);
-	int 			pollConnections(int socket);
-	int				check_error(const std::string message, std::vector<std::string> param);
+	void 			pollConnections(int socket);
+    int	check_error(const std::string message);
 	void			printFds();
 
 };
