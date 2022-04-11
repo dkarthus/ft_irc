@@ -27,31 +27,31 @@
 class Server
 {
 private:
-	Socket				servSocket;
-	Responser           responser;
-	Storage				storage[FD_SIZE];
-	User 				user;
+    Socket				servSocket;
+    Responser           responser;
+    Storage				storage[FD_SIZE];
+    User 				user;
 public:
-	Server();
+    Server();
 
-	struct pollfd		fds[FD_SIZE];
-	int                 nfds;
-	int 				timeout;
+    struct pollfd		fds[FD_SIZE];
+    int                 nfds;
+    int 				timeout;
 
-	int 				currentSize;
+    int 				currentSize;
 
-	Server(const char *port);
-	Server(const Server &other);
-	const Socket    &getServSocket() const;
-	Server			&operator=(const Server &other);
-	~Server();
-	void			startSocket(Socket &serv_socket);
-	void 			listenConnections(int socket);
+    Server(const char *port);
+    Server(const Server &other);
+    const Socket    &getServSocket() const;
+    Server			&operator=(const Server &other);
+    ~Server();
+    void			startSocket(Socket &serv_socket);
+    void 			listenConnections(int socket);
 
-	void 			initFdStruct(int socket);
-	int 			pollConnections(int socket);
-	int				check_error(const std::string message, std::vector<std::string> param);
-	void			printFds();
+    void 			initFdStruct(int socket);
+    int 			pollConnections(int socket);
+    int				check_error(const std::string message, std::vector<std::string> param);
+    void			printFds();
 
 };
 
