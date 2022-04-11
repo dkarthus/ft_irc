@@ -12,6 +12,7 @@ Server::Server(const char *port)
 	startSocket(servSocket);
 	listenConnections(servSocket.getListenSock());
 	initFdStruct(servSocket.getListenSock());
+    nfds = 1;
 }
 
 Server::Server(const Server &other)
@@ -133,175 +134,121 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
         if (command == "PASS")
             user.setPassword(param[0]);
         else if (command == "USER")
-            user.setUserName(param[0]);
+            user.setUsername(param[0]);
         else if (command == "NICK")
             user.setNickname(param[0]);
     }
 }
 
-    void Server::pollConnections(int listenSocket) {
+    int Server::pollConnections(int listenSocket) {
         int rc;
-        int nfds = 1;
-        int i, j;
-        int endServer = FALSE;
+        int i;
         int newSocket;
         int closeConn;
-        int len;
-        int compressArray = FALSE;
-        int count;
         Responser response;
 
-
-	/*************************************************************/
-	/* Loop waiting for incoming connects or for incoming data   */
-	/* on any of the connected sockets.                          */
-	/*************************************************************/
-	for (;;)
-	{
-		printf("...\n");
-		rc = poll(fds, nfds, timeout);
-		if (rc <= 0)
-		{
-			perror("  poll() failed or timed out.  End program.\n");
-			break;
-		}
-		currentSize = nfds;
-		for (i = 0; i < currentSize; i++)
-		{
-			if (fds[i].revents == 0)
-				continue;
-			if (fds[i].revents != POLLIN)
-			{
-				printf("  Error! revents = %d\n", fds[i].revents);
+        for (i = 0; i < currentSize; i++)
+        {
+            if (fds[i].revents == 0)
+                continue;
+            if (fds[i].revents != POLLIN) {
+                printf("  Error! revents = %d\n", fds[i].revents);
                 closeConn = TRUE;
-			}
-			if (fds[i].fd == listenSocket)
-			{
-//				printf("  Listening socket is readable\n");
-				newSocket = accept(listenSocket, NULL, NULL);
-				if (newSocket < 0)
-				{
-					if (errno != EWOULDBLOCK)
-						perror("  accept() failed");
-				}
-				//printf("  New incoming connection - %d\n", newSocket);
-				fds[nfds].fd = newSocket;
-				fds[nfds].events = POLLIN;
-				nfds++;
-			}
-			else
-			{
-				//printf("  Descriptor %d is readable\n", fds[i].fd);
-				closeConn = FALSE;
-				rc = recv(fds[i].fd, storage[i].buffer, sizeof(storage[i].buffer), 0);
-				//printf("Printing buffer: %s\n",storage[i].buffer);
-                if (rc < 0)
-				{
-					if (errno != EWOULDBLOCK)
-					{
-						perror("  recv() failed");
-						closeConn = TRUE;
-					}
-				}
-				if (rc == 0)
-				{
-					closeConn = TRUE;
-					printf("  Connection closed\n");
-					printf("  Descriptor %d closed\n", fds[i].fd);
-				}
-				else
-				{
-					printf("From fd [%d] received a message '%s'\n", fds[i].fd, storage[i].buffer);
-					std::string incomingMSG (storage[i].buffer);
-					if (incomingMSG.find("PRIVMSG") != std::string::npos) {
-						std::cout << "PRIVMSG was detected!" << std::endl;
-						// send response to Client:
-						int sentTo = fds[i].fd == 4 ? 5 : 4;
-						int sentFrom = sentTo == 4 ? 5 : 4;
-						std::string nickFrom = (incomingMSG.find("azat") != std::string::npos) ? ("aizhan") : ("azat");
-						std::string nickTo = nickFrom == ("azat") ? ("aizhan") : ("azat");
-						std::cout << "nickFrom:" << nickFrom << std::endl;
-						std::cout << "nickTo:" << nickTo << std::endl;
-						std::string myMessage = ":" + nickFrom + "!oem@127.0.0.1" + " PRIVMSG " + nickTo + " :Hello\n";
-
-						std::cout << "TO fd [" << sentTo <<  "] send a message '" << myMessage << "'" << std::endl;
-						send(sentTo, myMessage.c_str(), myMessage.length(), 0);
-					}
-					storage[i].setData();
-					len = rc;
-					//printf("  %d bytes received\n", len);
-//                    response.sendMotd(fds[i].fd);
-					//rc = send(fds[i].fd, response.sendMotd().c_str(), len, 0);
-
-					user.parse_message(storage[i].getData());
-					while (user.getMessage().size() > 0 &&
-						   user.getMessage().front()[user.getMessage().front().size() - 1] == '\n') {
-						//достаем по порядку команды и делим на command и parametrs
-						Message msg(user.getMessage().front());
-						//удаляем из user записанный message
-						if (user.getMessage().size() > 0)
-							user.message.pop();
-						if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED)
-							std::cout << ":You have not registered" << std::endl;
-					}
-//                    user.setParametrs();
-					if (incomingMSG.find("NICK") != std::string::npos)
-					{
-						int sentTo = fds[i].fd;
-						std::string nickTo = (incomingMSG.find("azat") != std::string::npos) ? ("azat") : ("aizhan");
-						response.sendMotd(fds[i].fd, nickTo);
-					}
+            }
+            if (fds[i].fd == listenSocket) {
+                newSocket = accept(listenSocket, NULL, NULL);
+                if (newSocket < 0) {
+                    if (errno != EWOULDBLOCK)
+                        perror("  accept() failed");
+                }
+                else
+                {
+                    fds[nfds].fd = newSocket;
+                    fds[nfds].events = POLLIN;
+                    nfds++;
+                }
+            }
+            else
+            {
+                closeConn = FALSE;
+                rc = recv(fds[i].fd, storage[i].buffer, sizeof(storage[i].buffer), 0);
+                if (rc < 0) {
+                    if (errno != EWOULDBLOCK) {
+                        perror("  recv() failed");
+                        closeConn = TRUE;
+                    }
+                }
+                if (rc == 0)
+                {
+                    closeConn = TRUE;
+                    printf("  Connection closed\n");
+                    printf("  Descriptor %d closed\n", fds[i].fd);
+                }
+                else
+                {
+                    printf("From fd [%d] received a message '%s'\n", fds[i].fd, storage[i].buffer);
+                    std::string incomingMSG(storage[i].buffer);
+                    if (incomingMSG.find("PRIVMSG") != std::string::npos) {
+                        std::cout << "PRIVMSG was detected!" << std::endl;
+                        // send response to Client:
+                        int sentTo = fds[i].fd == 4 ? 5 : 4;
+                        int sentFrom = sentTo == 4 ? 5 : 4;
+                        std::string nickFrom = (incomingMSG.find("azat") != std::string::npos) ? ("aizhan") : ("azat");
+                        std::string nickTo = nickFrom == ("azat") ? ("aizhan") : ("azat");
+                        std::cout << "nickFrom:" << nickFrom << std::endl;
+                        std::cout << "nickTo:" << nickTo << std::endl;
+                        std::string myMessage = ":" + nickFrom + "!oem@127.0.0.1" + " PRIVMSG " + nickTo + " :Hello\n";
+                        std::cout << "TO fd [" << sentTo << "] send a message '" << myMessage << "'" << std::endl;
+                        send(sentTo, myMessage.c_str(), myMessage.length(), 0);
+                    }
+                    storage[i].setData();
+                    user.parse_message(storage[i].getData());
+                    while (user.getMessages().size() > 0 &&
+                           user.getMessages().front()[user.getMessages().front().size() - 1] == '\n') {
+                        //достаем по порядку команды и делим на command и parametrs
+                        Message msg(user.getMessages().front());
+                        //удаляем из user записанный message
+                        if (user.getMessages().size() > 0)
+                            user.message.pop();
+                        if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED) {
+                            std::cout << ":You have not registered" << std::endl;
+                        }
+                    }
+                    if (incomingMSG.find("NICK") != std::string::npos) {
+                        int sentTo = fds[i].fd;
+                        std::string nickTo = (incomingMSG.find("azat") != std::string::npos) ? ("azat") : ("aizhan");
+                        response.sendMotd(fds[i].fd, nickTo);
+                    }
 //					sendPrivmsg(fds[i].fd, storage[i].buffer);
-					//std::cout << "Printing data" << std::endl;
-//					storage[i].printNodes();
+                    //std::cout << "Printing data" << std::endl;
+					storage[i].printNodes();
 //					if (rc < 0) {
 //						perror("  send() failed");
 //						closeConn = TRUE;
 //					}
-					//printf("  Has sent data to %d descriptor\n", fds[i].fd);
-				}
-				if (closeConn)
-				{
-					printf("   Closing %d descriptor\n", fds[i].fd);
-					close(fds[i].fd);
-					fds[i].fd = -1;
-					compressArray = TRUE;
-				}
-			}
-			}  /* End of existing connection is readable             */
-		} /* End of loop through pollable descriptors              */
-        /***********************************************************/
-        /* If the compress_array flag was turned on, we need       */
-        /* to squeeze together the array and decrement the number  */
-        /* of file descriptors. We do not need to move back the    */
-        /* events and revents fields because the events will always*/
-        /* be POLLIN in this case, and revents is output.          */
-        /***********************************************************/
-        if (compressArray) {
-            compressArray = FALSE;
-            for (i = 0; i < nfds; i++) {
-                if (fds[i].fd == -1) {
-                    for (j = i; j < nfds; j++) {
-                        fds[j].fd = fds[j + 1].fd;
-                    }
-                    i--;
-                    nfds--;
+                    //printf("  Has sent data to %d descriptor\n", fds[i].fd);
+                }
+                if (closeConn) {
+                    printf("   Closing %d descriptor\n", fds[i].fd);
+                    close(fds[i].fd);
+                    fds[i].fd = -1;
+                    return (1);
                 }
             }
-            std::cout << std::endl;
-        }
-    } /* End of serving running.    */
-
-    void Server::printFds() {
-        for (int i = 0; i < 10; ++i) {
-            printf("fd: %d, ", fds[i].fd);
-        }
+        }  /* End of existing connection is readable             */
+        //} /* End of loop through pollable descriptors              */
     }
 
-const Socket Server::getServSocket() const
-{
-	return servSocket;
+void Server::printFds() {
+    for (int i = 0; i < 10; ++i) {
+        printf("fd: %d, ", fds[i].fd);
+    }
 }
+
+const Socket &Server::getServSocket() const {
+    return servSocket;
+}
+
 
 
 

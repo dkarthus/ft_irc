@@ -4,7 +4,6 @@ SRCS =		srcs/main.cpp \
 			srcs/Server.cpp \
 			srcs/Socket.cpp \
 			srcs/Storage.cpp \
-			srcs/utils.cpp \
 			srcs/Node.cpp \
 			srcs/Responser.cpp\
 			srcs/User.cpp \
@@ -20,7 +19,6 @@ FLAGS = #-Wall -Wextra -Werror
 INCLUDE =	srcs/Server.hpp \
 			srcs/Socket.hpp \
 			srcs/Storage.hpp \
-			srcs/utils.hpp \
 			srcs/Node.hpp \
 			srcs/Responser.hpp\
 			srcs/User.hpp \

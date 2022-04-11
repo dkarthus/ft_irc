@@ -2,10 +2,6 @@
 
 #include <iostream>
 
-User::User()
-{
-
-}
 
 std::queue<std::string>	split(const std::string &s, char sep, bool include)
 {
@@ -38,22 +34,82 @@ void User::parse_message(Node *mes) {
         message = split(text, '\n', true);
 }
 
-const std::queue<std::string>	&User::getMessage() const
+User::User(int sockfd, const std::string& nName):
+sockfd(sockfd), nickname(nName) {}
+
+User::User(int sockfd, const std::string& nName, const std::string &hName):
+sockfd(sockfd), nickname(nName), hostname(hName) {}
+
+User::User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName):
+sockfd(sockfd), nickname(nName), hostname(hName), username(uName) {}
+
+User::User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName, const std::string& rName):
+sockfd(sockfd), nickname(nName), hostname(hName), username(uName), realname(rName) {}
+
+User::~User()
+{}
+
+int		User::getSockfd() const
 {
-	return message;
+	return sockfd;
 }
 
-void User::setRegister(){
+const std::string	&User::getUsername() const
+{
+	return username;
+}
 
+const std::string	&User::getHostname() const
+{
+	return hostname;
+}
+
+const std::string	&User::getNickname() const
+{
+	return nickname;
+}
+
+const std::string	&User::getRealname() const
+{
+	return realname;
+}
+
+const std::string	&User::getPassword() const
+{
+	return password;
+}
+
+void	User::setPassword(const std::string &pass)
+{
+	password = pass;
+}
+
+void	User::setUsername(const std::string &uName)
+{
+    username = uName;
+}
+
+void	User::setHostname(const std::string &hName)
+{
+	hostname = hName;
+}
+
+void	User::setNickname(const std::string &nName)
+{
+	nickname = nName;
+}
+
+void	User::setRealname(const std::string &rName)
+{
+	realname = rName;
+}
+
+User::User()
+{
 
 }
 
-void User::setPassword(std::string password){
-    this->password = password;
-}
-void User::setNickname(std::string nickname){
-    this->nickname = nickname;
-}
-void User::setUserName(std::string username){
-    this->username = username;
+const std::queue<std::string> &User::getMessages() const
+{
+	return this->message;
 }

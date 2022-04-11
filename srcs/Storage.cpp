@@ -23,22 +23,24 @@ Storage::~Storage()
 
 void Storage::addNewNode() {
 	Node *new_node = new Node(std::string(this->buffer));
-	Node *temp;
+//	Node *temp;
 
-	temp = data;
-	if (temp)
-	{
-		while (temp->next != NULL)
-		{
-			temp = temp->next;
-		}
-		temp->next = new_node;
-		new_node->prev = temp;
-	}
-	else
-	{
-		data = new_node;
-	}
+//	temp = data;
+//	if (temp)
+//	{
+//		while (temp->next != NULL)
+//		{
+//			temp = temp->next;
+//		}
+//		temp->next = new_node;
+//		new_node->prev = temp;
+//	}
+//	else
+//	{
+//		data = new_node;
+//	}
+	new_node->next = data;
+	data = new_node;
 }
 
 void Storage::setData()

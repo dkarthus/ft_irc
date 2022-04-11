@@ -17,7 +17,7 @@
 #include <fcntl.h>
 #include "Socket.hpp"
 #include "Storage.hpp"
-#include "utils.hpp"
+
 #define RPL_MOTD				372
 #define RPL_MOTDSTART			375
 #define RPL_ENDOFMOTD			376
