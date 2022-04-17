@@ -17,7 +17,7 @@ int			main(int argc, const char *argv[])
             for (;;)
             {
                 printf("polling...\n");
-                rc = poll(ircServer.fds, ircServer.nfds, ircServer.timeout);
+                rc = poll(ircServer.fds.data(), ircServer.fds.size(), ircServer.timeout);
                 if (rc <= 0) {
                     perror("  poll() failed or timed out.  End program.\n");
                     return (1);

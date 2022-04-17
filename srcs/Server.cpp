@@ -131,12 +131,15 @@ int	Server::check_error(const std::string command, std::vector<std::string> para
     if (command != "PASS" && command != "USER" && command != "NICK")
         return (NOTREGISTERED);
     else {
+
+		/*
         if (command == "PASS")
             user.setPassword(param[0]);
         else if (command == "USER")
             user.setUsername(param[0]);
         else if (command == "NICK")
             user.setNickname(param[0]);
+		*/
     }
 }
 
@@ -147,7 +150,7 @@ int Server::pollConnections(int listenSocket) {
     int closeConn;
     Responser response;
 
-    for (i = 0; i < currentSize; i++)
+    for (i = 0; i < fds.size(); i++)
     {
         if (fds[i].revents == 0)
             continue;
@@ -163,6 +166,7 @@ int Server::pollConnections(int listenSocket) {
             }
             else
             {
+				//проверка юзера и инициализация юзера
                 fds[nfds].fd = newSocket;
                 fds[nfds].events = POLLIN;
                 nfds++;
