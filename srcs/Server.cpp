@@ -149,6 +149,7 @@ int Server::pollConnections(int listenSocket) {
     int newSocket;
     int closeConn;
     Responser response;
+	struct pollfd new_fd;
 
     for (i = 0; i < fds_vec.size(); i++)
     {
@@ -169,9 +170,9 @@ int Server::pollConnections(int listenSocket) {
 			{
 				//проверка юзера и инициализация юзера
 				users.push_back(new User(newSocket));
-				fds_vec.push_back(fds[i]);
-				fds_vec[i].fd = newSocket;
-				fds_vec[i].events = POLLIN;
+				fds_vec.push_back(new_fd);
+				new_fd.fd = newSocket;
+				new_fd.events = POLLIN;
 				nfds++;
 			}
         }
