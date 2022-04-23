@@ -34,6 +34,14 @@ void User::parse_message(Node *mes) {
         message = split(text, '\n', true);
 }
 
+void	User::sendMessage(const std::string &mssg) const
+{
+	if (mssg.size() > 0)
+		send(sockfd, mssg.c_str(), mssg.size(), IRC_NOSIGNAL);
+}
+
+User::User(int sockfd): sockfd(sockfd) {}
+
 User::User(int sockfd, const std::string& nName):
 sockfd(sockfd), nickname(nName) {}
 

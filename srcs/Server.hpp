@@ -30,10 +30,13 @@ private:
     Socket				servSocket;
     Responser           responser;
     Storage				storage[FD_SIZE];
-    User 				user;
+    std::vector<User *> users;
+    //std::vector<Channel *> channels;
+
 public:
     Server();
 
+	std::vector<struct pollfd>	fds_vec;
     struct pollfd		fds[FD_SIZE];
     int                 nfds;
     int 				timeout;
