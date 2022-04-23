@@ -154,6 +154,7 @@ int Server::pollConnections(int listenSocket) {
     int newSocket;
     int closeConn;
     Responser response;
+	struct pollfd new_fd;
 
     for (i = 0; i < fds_vec.size(); i++)
     {

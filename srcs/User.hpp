@@ -26,6 +26,8 @@
 #include <queue>
 #include <algorithm>
 
+#define IRC_NOSIGNAL SO_NOSIGPIPE
+
 
 class User {
 public:
@@ -59,7 +61,8 @@ public:
     int	                                getSockfd() const;
 
     //methods
-    void parse_message(Node *mes);
+    void								parse_message(Node *mes);
+	void								sendMessage(const std::string &mssg) const;
 
 	std::queue<std::string>				message;
 private:
