@@ -12,7 +12,6 @@ Server::Server(const char *port)
     startSocket(servSocket);
     listenConnections(servSocket.getListenSock());
     initFdStruct(servSocket.getListenSock());
-    nfds = 1;
 }
 
 Server::Server(const Server &other)
@@ -30,11 +29,12 @@ Server::~Server()
     /*************************************************************/
     /* Clean up all of the sockets that are open                 */
     /*************************************************************/
-    for (int i = 0; i < currentSize; i++)
-    {
-        if(fds[i].fd >= 10)
-            close(fds[i].fd);
-    }
+//    for (int i = 0; i < currentSize; i++)
+//    {
+//        if(fds[i].fd >= 10)
+//            close(fds[i].fd);
+//    }
+    fds_vec.clear();
 }
 
 void Server::startSocket(Socket &serv_socket)
@@ -118,8 +118,13 @@ void Server::initFdStruct(int socket)
     /*************************************************************/
     /* Set up the initial listening socket                        */
     /*************************************************************/
-    fds[0].fd = socket;
-    fds[0].events = POLLIN;
+//    fds[0].fd = socket;
+//    fds[0].events = POLLIN;
+    struct pollfd       fd = {};
+
+    fd.fd = socket;
+    fd.events = POLLIN;
+    fds_vec.push_back(fd);
     /*************************************************************/
     /* Initialize the timeout to 3 minutes. If no                */
     /* activity after 3 minutes this program will end.           */
@@ -169,10 +174,10 @@ int Server::pollConnections(int listenSocket) {
 			{
 				//проверка юзера и инициализация юзера
 				users.push_back(new User(newSocket));
-				fds_vec.push_back(fds[i]);
-				fds_vec[i].fd = newSocket;
-				fds_vec[i].events = POLLIN;
-				nfds++;
+                struct pollfd       fd = {};
+                fd.fd = newSocket;
+                fd.events = POLLIN;
+				fds_vec.push_back(fd);
 			}
         }
         else
@@ -209,18 +214,18 @@ int Server::pollConnections(int listenSocket) {
                     send(sentTo, myMessage.c_str(), myMessage.length(), 0);
                 }
                 storage[i].setData();
-                users[i]->parse_message(storage[i].getData());
-                while (users[i]->getMessages().size() > 0 &&
-						users[i]->getMessages().front()[users[i]->getMessages().front().size() - 1] == '\n') {
-                    //достаем по порядку команды и делим на command и parametrs
-                    Message msg(users[i]->getMessages().front());
-                    //удаляем из user записанный message
-                    if (users[i]->getMessages().size() > 0)
-						users[i]->message.pop();
-                    if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED) {
-                        std::cout << ":You have not registered" << std::endl;
-                    }
-                }
+//                users[i]->parse_message(storage[i].getData());
+//                while (users[i]->getMessages().size() > 0 &&
+//						users[i]->getMessages().front()[users[i]->getMessages().front().size() - 1] == '\n') {
+//                    //достаем по порядку команды и делим на command и parametrs
+//                    Message msg(users[i]->getMessages().front());
+//                    //удаляем из user записанный message
+//                    if (users[i]->getMessages().size() > 0)
+//						users[i]->message.pop();
+//                    if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED) {
+//                        std::cout << ":You have not registered" << std::endl;
+//                    }
+//                }
                 if (incomingMSG.find("NICK") != std::string::npos) {
                     int sentTo = fds_vec[i].fd;
                     std::string nickTo = (incomingMSG.find("azat") != std::string::npos) ? ("azat") : ("aizhan");
@@ -237,9 +242,10 @@ int Server::pollConnections(int listenSocket) {
             }
             if (closeConn) {
                 printf("   Closing %d descriptor\n", fds_vec[i].fd);
-                close(fds[i].fd);
-                fds[i].fd = -1;
-                return (1);
+                close(fds_vec[i].fd);
+                fds_vec.erase(fds_vec.begin() + i);
+//                fds[i].fd = -1;
+//                return (1);
             }
         }
     }  /* End of existing connection is readable             */

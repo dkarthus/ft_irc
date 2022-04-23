@@ -9,6 +9,8 @@
 #include <vector>
 #include "User.hpp"
 
+class User;
+
 class Channel
 {
 public:
@@ -41,7 +43,7 @@ private:
 	std::string						name;
 	std::vector<const User *>		ops;
 	std::vector<const User *>		users;
-	std::vector<const std::string>	banned;
+	std::vector<std::string>	banned;
 	std::string						pass;
 	std::string						topic;
 	std::string						flags;

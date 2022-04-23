@@ -1,5 +1,5 @@
-#include "Server.hpp"
-#include "Socket.hpp"
+#include "srcs/Server.hpp"
+#include "srcs/Socket.hpp"
 
 
 void	sigHandler(int signum)
