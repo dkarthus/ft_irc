@@ -34,6 +34,8 @@ void User::parse_message(Node *mes) {
         message = split(text, '\n', true);
 }
 
+User::User(int sockfd): sockfd(sockfd) {}
+
 User::User(int sockfd, const std::string& nName):
 sockfd(sockfd), nickname(nName) {}
 

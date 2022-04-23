@@ -17,7 +17,7 @@ int			main(int argc, const char *argv[])
             for (;;)
             {
                 printf("polling...\n");
-                rc = poll(ircServer.fds.data(), ircServer.fds.size(), ircServer.timeout);
+                rc = poll(ircServer.fds_vec.data(), ircServer.fds_vec.size(), ircServer.timeout);
                 if (rc <= 0) {
                     perror("  poll() failed or timed out.  End program.\n");
                     return (1);
@@ -27,9 +27,9 @@ int			main(int argc, const char *argv[])
                 {
                         int nfds = ircServer.currentSize;
                         for (int i = 0; i < nfds; i++) {
-                            if (ircServer.fds[i].fd == -1) {
+                            if (ircServer.fds_vec[i].fd == -1) {
                                 for (int j = i; j < nfds; j++) {
-                                    ircServer.fds[j].fd = ircServer.fds[j + 1].fd;
+                                    ircServer.fds_vec[j].fd = ircServer.fds_vec[j + 1].fd;
                                 }
                                 i--;
                                 nfds--;

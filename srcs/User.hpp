@@ -33,6 +33,7 @@ public:
     //std::string						    command;
     //std::vector<std::string>		    parameters;
 
+	User(int sockfd);
     User(int sockfd, const std::string& nName);
     User(int sockfd, const std::string& nName, const std::string& hName);
     User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName);
