@@ -7,6 +7,7 @@
 #include "Storage.hpp"
 #include "Socket.hpp"
 #include "Message.hpp"
+#include "Channel.hpp"
 #include <arpa/inet.h>
 #include <cerrno>
 #include <cstdlib> // For exit() and EXIT_FAILURE
