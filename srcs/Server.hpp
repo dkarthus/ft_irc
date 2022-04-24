@@ -22,7 +22,7 @@
 #define TRUE 1
 #define FALSE 0
 #define FD_SIZE 10
-
+#define	DISCONNECT	-2
 
 class Server
 {
@@ -53,9 +53,10 @@ public:
 
     void 			initFdStruct(int socket);
     int 			pollConnections(int socket);
-    int				check_error(const std::string message, std::vector<std::string> param);
+    // int				check_error(const std::string message, std::vector<std::string> param, int i);
     void			printFds();
-
+    int				set_param_user(const std::string message, std::vector<std::string> param, int i);
+    int checkConnection(int n, int fd, int i);
 };
 
 #endif

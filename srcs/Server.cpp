@@ -132,28 +132,92 @@ void Server::initFdStruct(int socket)
     /*************************************************************/
     timeout = (30 * 60 * 1000);
 }
-int	Server::check_error(const std::string command, std::vector<std::string> param) {
-    if (command != "PASS" && command != "USER" && command != "NICK")
-        return (NOTREGISTERED);
-    else {
+// int	Server::check_error(const std::string command, std::vector<std::string> param, int i) {
+//     if (command != "PASS" && command != "USER" && command != "NICK")
+//         return (NOTREGISTERED);
+//     else {
 
-		/*
-        if (command == "PASS")
-            user.setPassword(param[0]);
-        else if (command == "USER")
-            user.setUsername(param[0]);
-        else if (command == "NICK")
-            user.setNickname(param[0]);
-		*/
+// 		/*
+//         if (command == "PASS")
+//             user.setPassword(param[0]);
+//         else if (command == "USER")
+//             user.setUsername(param[0]);
+//         else if (command == "NICK")
+//             user.setNickname(param[0]);
+// 		*/
+//     }
+// }
+
+int	Server::set_param_user(const std::string command, std::vector<std::string> param, int i) {
+    int pass = 0;
+    if (command == "PASS"){
+        pass = 1;
+        users[i]->setPassword(param[0]);
     }
+    else if (command == "USER")
+        users[i]->setUsername(param[0]);
+    else if (command == "NICK")
+        users[i]->setNickname(param[0]);
+    return pass;
+//    if (user.getMessage().size > 0)
+//        return (NOTREGISTERED);
+
 }
+
+int	Server::checkConnection(int n, int fd, int i) {
+    if (users[i]->getNickname().size() > 0 && users[i]->getUsername().size() > 0){
+        if (users[i]->getPassword().size() > 0 || n == 1){
+            if (!(users[i]->getFlags() & REGISTERED)){
+                users[i]->setFlag(REGISTERED);
+                Responser response;
+//                sendResponse(fd, int respCode, std::string &nick)
+                std::string nickTo = users[i]->getNickname();
+                response.sendMotd(fd, nickTo);
+                // message of the day
+
+            }
+        }
+        else
+            return (DISCONNECT);
+    }
+    return 0;
+}
+
+// int	Server::join(const std::string command, std::vector<std::string> param){
+//     std::cout << "JOIN" << " name: " << param[0] << " pass: " << param[1] << std::endl;
+// //    if (param.size() == 0)
+// //        return -1;
+// //    else{
+// //        std::queue<std::string>	chans = split3(param[0], ',', false);
+// ////        std::cout << chans << std::endl;
+// //        std::queue<std::string>	keys;
+// //        if (param.size() > 1)
+// //            keys = split3(param[1], ',', false);
+// //        for (; chans.size() > 0; chans.pop()){
+// //                std::string	key = keys.size() ? keys.front() : "";
+// //                if (keys.size() > 0)
+// //                    keys.pop();
+// //
+// //        }
+// //    }
+// //    return 0;
+
+//         if (param.size() == 0)
+//             return -1;
+//         else{
+//             channels[param[0]] = new Channel(param[0], user, param[1]);
+//         }
+//         return 0;
+
+//     }
+
 
 int Server::pollConnections(int listenSocket) {
     int rc;
     int i;
     int newSocket;
     int closeConn;
-    Responser response;
+    // Responser response;
 	struct pollfd new_fd;
 
     for (i = 0; i < fds_vec.size(); i++)
@@ -201,40 +265,33 @@ int Server::pollConnections(int listenSocket) {
             {
                 printf("From fd [%d] received a message '%s'\n", fds_vec[i].fd, storage[i].buffer);
                 std::string incomingMSG(storage[i].buffer);
-                if (incomingMSG.find("PRIVMSG") != std::string::npos) {
-                    std::cout << "PRIVMSG was detected!" << std::endl;
-                    // send response to Client:
-                    int sentTo = fds_vec[i].fd == 4 ? 5 : 4;
-                    int sentFrom = sentTo == 4 ? 5 : 4;
-                    std::string nickFrom = (incomingMSG.find("azat") != std::string::npos) ? ("aizhan") : ("azat");
-                    std::string nickTo = nickFrom == ("azat") ? ("aizhan") : ("azat");
-                    std::cout << "nickFrom:" << nickFrom << std::endl;
-                    std::cout << "nickTo:" << nickTo << std::endl;
-                    std::string myMessage = ":" + nickFrom + "!oem@127.0.0.1" + " PRIVMSG " + nickTo + " :Hello\n";
-                    std::cout << "TO fd [" << sentTo << "] send a message '" << myMessage << "'" << std::endl;
-                    send(sentTo, myMessage.c_str(), myMessage.length(), 0);
-                }
                 storage[i].setData();
-//                users[i]->parse_message(storage[i].getData());
-//                while (users[i]->getMessages().size() > 0 &&
-//						users[i]->getMessages().front()[users[i]->getMessages().front().size() - 1] == '\n') {
-//                    //достаем по порядку команды и делим на command и parametrs
-//                    Message msg(users[i]->getMessages().front());
-//                    //удаляем из user записанный message
-//                    if (users[i]->getMessages().size() > 0)
-//						users[i]->message.pop();
-//                    if (check_error(msg.getCommand(), msg.getParameters()) == NOTREGISTERED) {
-//                        std::cout << ":You have not registered" << std::endl;
-//                    }
-//                }
-                if (incomingMSG.find("NICK") != std::string::npos) {
-                    int sentTo = fds_vec[i].fd;
-                    std::string nickTo = (incomingMSG.find("azat") != std::string::npos) ? ("azat") : ("aizhan");
-                    response.sendMotd(fds_vec[i].fd, nickTo);
-                }
+               users[i-1]->parse_message(storage[i].getData());
+               while (users[i-1]->getMessages().size() > 0 &&
+						users[i-1]->getMessages().front()[users[i-1]->getMessages().front().size() - 1] == '\n') {
+                   //достаем по порядку команды и делим на command и parametrs
+                   Message msg(users[i-1]->getMessages().front());
+                   //удаляем из user записанный message
+                   if (users[i-1]->getMessages().size() > 0)
+						users[i-1]->message.pop();
+                    if (msg.getCommand() == "JOIN"){
+                            // join(msg.getCommand(), msg.getParameters());
+                        }
+                    else{
+                            int n = 0;
+                            n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);
+                            checkConnection(n, fds_vec[i].fd, i - 1);
+                        }
+                   
+               }
+                // if (incomingMSG.find("NICK") != std::string::npos) {
+                //     int sentTo = fds_vec[i].fd;
+                //     std::string nickTo = (incomingMSG.find("azat") != std::string::npos) ? ("azat") : ("aizhan");
+                //     response.sendMotd(fds_vec[i].fd, nickTo);
+                // }
 //					sendPrivmsg(fds[i].fd, storage[i].buffer);
                 //std::cout << "Printing data" << std::endl;
-                storage[i].printNodes();
+                //storage[i].printNodes();
 //					if (rc < 0) {
 //						perror("  send() failed");
 //						closeConn = TRUE;

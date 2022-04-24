@@ -121,3 +121,16 @@ const std::queue<std::string> &User::getMessages() const
 {
 	return this->message;
 }
+
+
+unsigned char	User::getFlags() const
+{
+	return flags;
+}
+
+void	User::setFlag(unsigned char flag)
+{
+	flags |= flag;
+	// if (flag == BREAKCONNECTION && quitMessage.size() == 0)
+	// 	quitMessage = "Client exited";
+}
