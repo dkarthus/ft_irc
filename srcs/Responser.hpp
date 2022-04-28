@@ -46,7 +46,7 @@ public:
 	void 				sendMotd(int fd, std::string &nick);
 	void				processResponse();
 	void				sendResponse(int fd, int response, std::string &nick);
-	void				sendError(int fd, int error, const std::string& command);
+	int				sendError(int fd, int error, const std::string& command);
 
 
 

@@ -134,3 +134,7 @@ void	User::setFlag(unsigned char flag)
 	// if (flag == BREAKCONNECTION && quitMessage.size() == 0)
 	// 	quitMessage = "Client exited";
 }
+
+//int getFdNick(std::string Nick){
+//
+//}

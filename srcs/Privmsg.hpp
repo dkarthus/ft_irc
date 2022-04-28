@@ -21,6 +21,6 @@
 #include "User.hpp"
 #define BUFFSIZE 		510
 
-void 		sendPrivmsg(int fd, char *buffer);
+int 		sendPrivmsg(int fd, const std::vector<std::string> param, int fd_send, std::string sender);
 
 #endif

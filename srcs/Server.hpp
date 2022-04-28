@@ -57,6 +57,8 @@ public:
     void			printFds();
     int				set_param_user(const std::string message, std::vector<std::string> param, int i);
     int checkConnection(int n, int fd, int i);
+    int getFdByNick(const std::string nick);
+    std::string getNickbyFd(int fd);
 };
 
 #endif

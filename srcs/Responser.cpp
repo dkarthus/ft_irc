@@ -53,7 +53,7 @@ void 			Responser::sendMotd(int fd, std::string &nick)
 	this->sendResponse(fd, RPL_ENDOFMOTD, nick);
 }
 
-void Responser::sendError(int fd, int errorCode, const std::string& command)
+int Responser::sendError(int fd, int errorCode, const std::string& command)
 {
 	std::string 		error;
 	std::string 		serverName = "IRCSERV";
@@ -62,7 +62,7 @@ void Responser::sendError(int fd, int errorCode, const std::string& command)
 	std::string 		channelName;
 	ss << errorCode;
 
-	error = ':' + serverName + " " + ss.str() + " ";
+	error = ':' + serverName + " " + ss.str() + " " ;
 	switch (errorCode)
 	{
 		case ERR_NEEDMOREPARAMS:
@@ -93,9 +93,10 @@ void Responser::sendError(int fd, int errorCode, const std::string& command)
 			error = error + nick + " No such nick/channel";
 			break;
 		case ERR_NOTEXTTOSEND:
-			error = error + ":No text to send";
+			error = error + " :No text to send";
 			break;
 	}
 	std::cout << "Printing error" << error << std::endl;
 	send(fd, error.c_str(), error.length(), 0);
+    return(-1);
 }

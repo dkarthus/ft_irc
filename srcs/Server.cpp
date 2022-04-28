@@ -277,6 +277,13 @@ int Server::pollConnections(int listenSocket) {
                     if (msg.getCommand() == "JOIN"){
                             // join(msg.getCommand(), msg.getParameters());
                         }
+                   if (msg.getCommand() == "PRIVMSG"){
+                       if (msg.getParameters().size() == 0)
+                           return(responser.sendError(fds_vec[i].fd, ERR_NORECIPIENT, msg.getCommand()));
+                       else if (msg.getParameters().size() == 1)
+                           return(responser.sendError(fds_vec[i].fd, ERR_NOTEXTTOSEND, msg.getCommand()));
+                       sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd));
+                   }
                     else{
                             int n = 0;
                             n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);
@@ -318,4 +325,32 @@ void Server::printFds() {
 
 const Socket &Server::getServSocket() const {
     return servSocket;
+}
+
+
+int Server::getFdByNick(const std::string nick){
+    size_t	usersCount = users.size();
+    size_t i = 0;
+    int fd = -1;
+    if (nick.size() == 0)
+        return fd;
+    while(usersCount > i){
+        if(users[i]->getNickname() == nick)
+            fd = users[i]->getSockfd();
+        i++;
+    }
+    return fd;
+
+}
+
+std::string Server::getNickbyFd(int fd){
+    size_t	usersCount = users.size();
+    size_t i = 0;
+    std::string nick = " ";
+    while(usersCount > i){
+        if(users[i]->getSockfd() == fd)
+            nick = users[i]->getNickname();
+        i++;
+    }
+    return nick;
 }

@@ -1,12 +1,17 @@
 #include "Privmsg.hpp"
 
-void 		sendPrivmsg(int fd, char *message) {
-	std::string 		sender = "aizhan";
-	std::string 		receiver = "azat";
+int 		sendPrivmsg(int fd, const std::vector<std::string> param, int fd_send, std::string sender) {
+	std::string 		receiver;
 	std::string 		myMessage;
+    Responser response;
 
-	std::cout << "SEND MSG'" << message << "' to fd " << fd << std::endl;
-	myMessage = ":" + receiver + "!oem@127.0.0.1" + " PRIVMSG " + sender + " :Hello";
-	printf("printing myMessage: %s\n", myMessage.c_str());
-	send(fd + 1, myMessage.c_str(), sizeof(myMessage.c_str()), 0);
+    receiver = param[0];
+//	std::cout << "SEND MSG'" << param[1] << "' to fd " << fd_send<< std::endl;
+//    :kalexand!Adium@127.0.0.1 PRIVMSG yuliya :k
+	myMessage = ":" + sender + "!Adium@127.0.0.1" + " PRIVMSG "+ receiver  + " :" + param[1] + "\n" ;
+//	printf("printing myMessage: %s\n", myMessage.c_str());
+//    std::string send_mess = param[1] + "\n";
+//    std::cout<< myMessage.size()<< "\n"<< sizeof(myMessage.c_str())<< std::endl;
+	send(fd_send, myMessage.c_str(), myMessage.size(), 0);
+    return(0);
 }
