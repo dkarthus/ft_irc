@@ -16,11 +16,19 @@ Channel::Channel(const std::string &name, const User *creator, const std::string
 
 void Channel::answerOper(const User *user){
     std::string	names;
-    for (size_t i = 0; i < ops.size(); i++)
-        if (ops[i]->getNickname() == user->getNickname())
-            names += "@";
-    names += user->getNickname();
-    responser.sendAnswerJoin(user->getSockfd(), RPL_NAMREPLY, names, name);
+    std::vector<const User *>::const_iterator	beg = users.begin();
+    std::vector<const User *>::const_iterator	end = users.end();
+    while (beg != end) {
+        const User *tmp = *beg;
+        for (size_t i = 0; i < ops.size(); i++)
+            if (ops[i]->getNickname() == (tmp)->getNickname())
+                names += "@";
+        names += tmp->getNickname();
+        ++beg;
+        if (beg != end)
+            names += " ";
+    }
+    responser.sendListUsers(user->getSockfd(), RPL_NAMREPLY, user->getNickname(), names,  name);
 
 }
 
@@ -34,7 +42,7 @@ void Channel::CheckConnect(const User *user, const std::string &passU){
         send(5, mssg.c_str(), mssg.size(), IRC_NOSIGNAL);
 
         responser.sendAnswerJoin(user->getSockfd(), RPL_NOTOPIC, user->getNickname(), getName());
-//        answerOper(user);
+        answerOper(user);
         responser.sendAnswerJoin(user->getSockfd(), RPL_ENDOFNAMES, user->getNickname(), name);
 
     }

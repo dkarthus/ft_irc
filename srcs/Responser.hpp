@@ -54,6 +54,7 @@ public:
 	void				sendResponse(int fd, int response, std::string &nick);
 	int				    sendError(int fd, int error, const std::string& command);
     int                 sendAnswerJoin(int fd, int errorCode, const std::string& nick, const std::string& name);
+    int                 sendListUsers(int fd, int errorCode, const std::string& nick, const std::string& nicksUser, const std::string& name);
 };
 
 #endif

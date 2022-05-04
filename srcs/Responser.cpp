@@ -126,14 +126,39 @@ int Responser::sendAnswerJoin(int fd, int errorCode, const std::string& nick, co
         case RPL_NOTOPIC:
             error = error + nick + " " + name + " :No topic is set\n";
             break;
-        case RPL_NAMREPLY:
-            error = error + nick_op + " = " + name + " :" + nick +"\n";
-            break;
+//        case RPL_NAMREPLY:
+//            error = error + nick_op + " = " + name + " :" + nick +"\n";
+//            break;
 //        case RPL_NAMREPLY1:
 //            error = error + nick + " = " + name + " :" +nick+"\n";
 //            break;
         case RPL_ENDOFNAMES:
             error = error + nick + " " + name + " :End of /NAMES list\n";
+            break;
+    }
+    std::cout << "Printing AnswerJoin" << error << std::endl;
+    send(fd, error.c_str(), error.length(), 0);
+    return(-1);
+}
+
+int Responser::sendListUsers(int fd, int errorCode, const std::string& nick, const std::string& nicksUser, const std::string& name)
+{
+    std::string 		error;
+    std::string 		serverName = "IRCSERV";
+    std::stringstream	ss;
+//    std::string 		nick_op;
+    std::string 		channelName;
+    ss << errorCode;
+
+//    nick_op = nick;
+//    if(nick[0] == '@')
+//        nick_op = nick_op.erase(0,1);
+
+    error = ':' + serverName + " " + ss.str() + " " ;
+    switch (errorCode)
+    {
+        case RPL_NAMREPLY:
+            error = error + nick + " = " + name + " :" + nicksUser +"\n";
             break;
     }
     std::cout << "Printing AnswerJoin" << error << std::endl;
