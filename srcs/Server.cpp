@@ -324,6 +324,10 @@ int Server::pollConnections(int listenSocket) {
 
                        sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd), users[i - 1]);
                    }
+                   else if (msg.getCommand() == "WHO"){
+                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
+                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
+                   }
                    else{
                        int n = 0;
                        n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);

@@ -7,7 +7,7 @@ Channel::Channel(const std::string &name, const User *creator, const std::string
 
 	users.push_back(creator);
 	ops.push_back(creator);
-    sendMessageJoin(creator, name);
+    sendMessageJoin(creator, name, "JOIN");
     responser.sendAnswerJoin(creator->getSockfd(), RPL_NOTOPIC, creator->getNickname(), name);
     answerOper(creator);
     responser.sendAnswerJoin(creator->getSockfd(), RPL_ENDOFNAMES, creator->getNickname(), name);
@@ -37,7 +37,7 @@ void Channel::CheckConnect(const User *user, const std::string &passU){
         responser.sendError(user->getSockfd(), ERR_BADCHANNELKEY, "JOIN");
     else{
         users.push_back(user);
-        sendMessageJoin(user, getName());
+        sendMessageJoin(user, getName(), "JOIN");
         std::string mssg=":IRCat 315 kalexand kalexand :End of /WHO list\n";
         send(5, mssg.c_str(), mssg.size(), IRC_NOSIGNAL);
 
@@ -48,9 +48,9 @@ void Channel::CheckConnect(const User *user, const std::string &passU){
     }
 
 }
-void Channel::sendMessageJoin(const User *user, const std::string	&name){
+void Channel::sendMessageJoin(const User *user, const std::string	name, std::string command){
     std::string	msg;
-    msg += ":" + user->getNickname() + "!Adium@127.0.0.1 JOIN :" + name+ "\n";
+    msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command + " :" + name+ "\n";
     std::vector<const User *>::const_iterator	begin = users.begin();
     std::vector<const User *>::const_iterator	end = users.end();
     for (; begin != end; ++begin)
@@ -59,6 +59,18 @@ void Channel::sendMessageJoin(const User *user, const std::string	&name){
     }
 
 };
+
+void Channel::sendMessagePrivmsg(const User *user, const std::string	name, std::string command, std::string mess){
+    std::string	msg;
+    msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command  + " " +  name + " :" + mess + "\n";
+    std::vector<const User *>::const_iterator	begin = users.begin();
+    std::vector<const User *>::const_iterator	end = users.end();
+    for (; begin != end; ++begin)
+    {
+        (*begin)->sendMessage(msg);
+    }
+
+}
 
 Channel::~Channel()
 {}

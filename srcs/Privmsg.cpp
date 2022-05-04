@@ -10,7 +10,7 @@ int 	Server::sendPrivmsg(int fd, const std::vector<std::string> param, int fd_se
 
     if (receiver[0] == '#' && fd_send == -1){
         Channel *receiverChannel = this->channels[receiver];
-        receiverChannel->sendMessageJoin(user, param[1]);
+        receiverChannel->sendMessagePrivmsg(user, param[0], "PRIVMSG", param[1]);
     }
     else {
 //	std::cout << "SEND MSG'" << param[1] << "' to fd " << fd_send<< std::endl;
@@ -25,6 +25,3 @@ int 	Server::sendPrivmsg(int fd, const std::vector<std::string> param, int fd_se
 }
 
 
-int sendMessageJoin(User *user, const std::string &name){
-
-}

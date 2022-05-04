@@ -18,8 +18,9 @@ public:
 	Channel(const std::string &name, const User *creator, const std::string &pass = "");
 	virtual ~Channel();
     void CheckConnect(const User *user, const std::string &pass);
-    void sendMessageJoin(const User *user, const std::string	&name);
+    void sendMessageJoin(const User *user, const std::string	name, std::string command);
     void answerOper(const User *user);
+    void sendMessagePrivmsg(const User *user, const std::string	name, std::string command, std::string mess);
 //
 	const std::string				&getName() const;
 //	const std::string				&getTopic() const;
