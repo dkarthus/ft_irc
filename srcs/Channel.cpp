@@ -45,7 +45,10 @@ void Channel::sendMessageJoin(const User *user, const std::string	&name){
     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 JOIN :" + name+ "\n";
     std::vector<const User *>::const_iterator	begin = users.begin();
     std::vector<const User *>::const_iterator	end = users.end();
-    (*begin)->sendMessage(msg);
+    for (; begin != end; ++begin)
+    {
+            (*begin)->sendMessage(msg);
+    }
 
 };
 
