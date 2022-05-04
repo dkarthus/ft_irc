@@ -211,6 +211,27 @@ int	Server::checkConnection(int n, int fd, int i) {
 
 //     }
 
+int Server::validName(std::vector<std::string> params){
+    if (params[0][0] != '#')
+        return(-1);
+}
+
+void Server::inviteChannel(std::vector<std::string> params, User *user, int fd){
+    User	*receiver;
+    for (size_t i = 0; i < users.size(); ++i)
+        if (users[i]->getNickname() == params[0])
+            receiver = users[i];
+    Channel	*now = channels.at(params[1]);
+//    if (now->containsNickname(params[0]))
+//        responser.sendAnswerJoin(fd, ERR_USERONCHANNEL, user->getNickname(), params[1]);
+
+
+}
+void Server::createChannel(std::vector<std::string> params, User *user){
+
+    channels[params[0]] = new Channel(params[0], user, params[1]);
+    std::cout << "@" << user->getNickname() <<" created Channel " << params[0] << " with password " << params[1]<< std::endl;
+}
 
 int Server::pollConnections(int listenSocket) {
     int rc;
@@ -274,21 +295,40 @@ int Server::pollConnections(int listenSocket) {
                    //удаляем из user записанный message
                    if (users[i-1]->getMessages().size() > 0)
 						users[i-1]->message.pop();
-                    if (msg.getCommand() == "JOIN"){
-                            // join(msg.getCommand(), msg.getParameters());
-                        }
-                   if (msg.getCommand() == "PRIVMSG"){
+                   if (msg.getCommand() == "JOIN"){
+                       if (msg.getParameters().size() == 0)
+                           return(responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, msg.getCommand()));
+                       if (validName(msg.getParameters()) == -1)
+                           return(responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getCommand()));
+                       try
+                       {
+                           Channel	*ch = channels.at(msg.getParameters()[0]);
+                           ch->CheckConnect(users[i - 1], msg.getParameters()[1]);
+                       }
+                       catch(const std::exception& e)
+                       {
+                           createChannel(msg.getParameters(), users[i - 1]);
+//                           std::string myMessage = ":IRCSERV 366 kalexand2 #irc :End of /NAMES list\n" ;
+//                           send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
+                       }
+                   }
+//                   else if  (msg.getCommand() == "INVITE") {
+//                       inviteChannel(msg.getParameters(), users[i-1]);
+//                   }
+                   else if (msg.getCommand() == "PRIVMSG"){
+
                        if (msg.getParameters().size() == 0)
                            return(responser.sendError(fds_vec[i].fd, ERR_NORECIPIENT, msg.getCommand()));
                        else if (msg.getParameters().size() == 1)
                            return(responser.sendError(fds_vec[i].fd, ERR_NOTEXTTOSEND, msg.getCommand()));
-                       sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd));
+
+                       sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd), users[i - 1]);
                    }
-                    else{
-                            int n = 0;
-                            n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);
-                            checkConnection(n, fds_vec[i].fd, i - 1);
-                        }
+                   else{
+                       int n = 0;
+                       n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);
+                       checkConnection(n, fds_vec[i].fd, i - 1);
+                   }
                    
                }
                 // if (incomingMSG.find("NICK") != std::string::npos) {
@@ -354,3 +394,4 @@ std::string Server::getNickbyFd(int fd){
     }
     return nick;
 }
+

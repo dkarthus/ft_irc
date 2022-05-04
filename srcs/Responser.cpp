@@ -66,37 +66,77 @@ int Responser::sendError(int fd, int errorCode, const std::string& command)
 	switch (errorCode)
 	{
 		case ERR_NEEDMOREPARAMS:
-			error = error + command + " :Not enough parameters";
+			error = error + command + " :Not enough parameters\n";
 			break;
 		case ERR_NONICKNAMEGIVEN:
-			error = error + ":No nickname given";
+			error = error + ":No nickname given\n";
 			break;
 		case ERR_NICKNAMEINUSE:
-			error = error + nick + " :Nickname is already in use";
+			error = error + nick + " :Nickname is already in use\n";
 			break;
 		case ERR_ERRONEUSNICKNAME:
-			error = error + nick + " :Erroneus nickname";
+			error = error + nick + " :Erroneus nickname\n";
 			break;
 		case ERR_NICKCOLLISION:
-			error = error + nick + " :Nickname collision KILL";
+			error = error + nick + " :Nickname collision KILL\n";
 			break;
 		case ERR_ALREADYREGISTRED:
-			error = error + ":You may not reregister";
+			error = error + ":You may not reregister\n";
 			break;
 		case ERR_NORECIPIENT:
-			error = error + ":No recipient given " + command;
+			error = error + ":No recipient given " + command + "\n";
 			break;
 		case ERR_CANNOTSENDTOCHAN:
-			error = error + channelName + "  :Cannot send to channel";
+			error = error + channelName + "  :Cannot send to channel\n";
 			break;
 		case ERR_NOSUCHNICK:
-			error = error + nick + " No such nick/channel";
+			error = error + nick + " No such nick/channel\n";
 			break;
 		case ERR_NOTEXTTOSEND:
-			error = error + " :No text to send";
+			error = error + " :No text to send\n";
 			break;
+        case ERR_NOSUCHCHANNEL:
+            error = error + " :No such channel\n";
+            break;
+        case ERR_BADCHANNELKEY:
+            error = error + " :Cannot join channel (+k)\n";
+            break;
 	}
 	std::cout << "Printing error" << error << std::endl;
 	send(fd, error.c_str(), error.length(), 0);
+    return(-1);
+}
+
+int Responser::sendAnswerJoin(int fd, int errorCode, const std::string& nick, const std::string& name)
+{
+    std::string 		error;
+    std::string 		serverName = "IRCSERV";
+    std::stringstream	ss;
+    std::string 		nick_op;
+    std::string 		channelName;
+    ss << errorCode;
+
+    nick_op = nick;
+    if(nick[0] == '@')
+        nick_op = nick_op.erase(0,1);
+
+    error = ':' + serverName + " " + ss.str() + " " ;
+    switch (errorCode)
+    {
+        case RPL_NOTOPIC:
+            error = error + nick + " " + name + " :No topic is set\n";
+            break;
+        case RPL_NAMREPLY:
+            error = error + nick_op + " = " + name + " :" + nick +"\n";
+            break;
+//        case RPL_NAMREPLY1:
+//            error = error + nick + " = " + name + " :" +nick+"\n";
+//            break;
+        case RPL_ENDOFNAMES:
+            error = error + nick + " " + name + " :End of /NAMES list\n";
+            break;
+    }
+    std::cout << "Printing AnswerJoin" << error << std::endl;
+    send(fd, error.c_str(), error.length(), 0);
     return(-1);
 }

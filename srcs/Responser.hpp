@@ -32,7 +32,13 @@
 #define ERR_NOSUCHNICK			401
 #define RPL_AWAY				301
 #define ERR_NOTEXTTOSEND		412
-#define NOTREGISTERED   451
+#define NOTREGISTERED           451
+#define ERR_NOSUCHCHANNEL       403
+#define RPL_NOTOPIC				331
+#define ERR_BADCHANNELKEY		475
+#define RPL_NAMREPLY			353
+#define RPL_ENDOFNAMES			366
+#define ERR_USERONCHANNEL		443
 
 class Responser {
 private:
@@ -46,10 +52,8 @@ public:
 	void 				sendMotd(int fd, std::string &nick);
 	void				processResponse();
 	void				sendResponse(int fd, int response, std::string &nick);
-	int				sendError(int fd, int error, const std::string& command);
-
-
-
+	int				    sendError(int fd, int error, const std::string& command);
+    int                 sendAnswerJoin(int fd, int errorCode, const std::string& nick, const std::string& name);
 };
 
 #endif

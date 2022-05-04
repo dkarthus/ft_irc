@@ -24,6 +24,9 @@
 #define FD_SIZE 10
 #define	DISCONNECT	-2
 
+class Channel;
+class User;
+
 class Server
 {
 private:
@@ -31,7 +34,7 @@ private:
     Responser           responser;
     Storage				storage[FD_SIZE];
     std::vector<User *> users;
-    //std::vector<Channel *> channels;
+//    std::vector<Channel *> channels;
 
 public:
     Server();
@@ -42,7 +45,7 @@ public:
     int 				timeout;
 
     int 				currentSize;
-
+    std::map<std::string, Channel *> channels;
     Server(const char *port);
     Server(const Server &other);
     const Socket    &getServSocket() const;
@@ -57,8 +60,12 @@ public:
     void			printFds();
     int				set_param_user(const std::string message, std::vector<std::string> param, int i);
     int checkConnection(int n, int fd, int i);
-    int getFdByNick(const std::string nick);
+    int getFdByNick(const  std::string nick);
     std::string getNickbyFd(int fd);
+    int validName(std::vector<std::string> params);
+    void createChannel(std::vector<std::string> params, User *user);
+    void inviteChannel(std::vector<std::string> params, User *user, int fd);
+    int sendPrivmsg(int fd, const std::vector<std::string> param, int fd_send, std::string sender, User *user);
 };
 
 #endif

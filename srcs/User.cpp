@@ -38,6 +38,7 @@ void	User::sendMessage(const std::string &mssg) const
 {
 	if (mssg.size() > 0)
 		send(sockfd, mssg.c_str(), mssg.size(), IRC_NOSIGNAL);
+    std::cout << mssg << std::endl;
 }
 
 User::User(int sockfd): sockfd(sockfd) {}
@@ -138,3 +139,4 @@ void	User::setFlag(unsigned char flag)
 //int getFdNick(std::string Nick){
 //
 //}
+
