@@ -2,9 +2,10 @@
 #include "Channel.hpp"
 
 Channel::Channel(const std::string &name, const User *creator, const std::string &pass) :
-		name(name), pass(pass), flags("n")
+		name(name),  flags("n")
 {
-
+    if(pass.size() > 0)
+        this->pass = pass;
 	users.push_back(creator);
 	ops.push_back(creator);
     sendMessageJoin(creator, name, "JOIN");
@@ -60,6 +61,7 @@ void Channel::sendMessageJoin(const User *user, const std::string	name, std::str
 
 };
 
+
 void Channel::sendMessagePrivmsg(const User *user, const std::string	name, std::string command, std::string mess){
     std::string	msg;
     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command  + " " +  name + " :" + mess + "\n";
@@ -69,15 +71,26 @@ void Channel::sendMessagePrivmsg(const User *user, const std::string	name, std::
     {
         (*begin)->sendMessage(msg);
     }
-
 }
+
+// void Channel::sendMessageKick(const User *user, const std::string	name, std::string command){
+//     std::string	msg;
+//     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command + " :" + name+ "\n";
+//     std::vector<const User *>::const_iterator	begin = users.begin();
+//     std::vector<const User *>::const_iterator	end = users.end();
+//     for (; begin != end; ++begin)
+//     {
+//         (*begin)->sendMessage(msg);
+//     }
+
+// };
+
 
 Channel::~Channel()
 {}
 //
 //
-const std::string	&Channel::getName() const
-{
+const std::string	&Channel::getName() const{
 	return (name);
 }
 

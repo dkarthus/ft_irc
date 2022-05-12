@@ -21,6 +21,7 @@ public:
     void sendMessageJoin(const User *user, const std::string	name, std::string command);
     void answerOper(const User *user);
     void sendMessagePrivmsg(const User *user, const std::string	name, std::string command, std::string mess);
+    // void sendMessageKick(const User *user, const std::string	name, std::string command);
 //
 	const std::string				&getName() const;
 //	const std::string				&getTopic() const;

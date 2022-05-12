@@ -99,7 +99,7 @@ int Responser::sendError(int fd, int errorCode, const std::string& command)
             error = error + " :No such channel\n";
             break;
         case ERR_BADCHANNELKEY:
-            error = error + " :Cannot join channel (+k)\n";
+            error = error + ":Cannot join channel (+k)\n";
             break;
 	}
 	std::cout << "Printing error" << error << std::endl;

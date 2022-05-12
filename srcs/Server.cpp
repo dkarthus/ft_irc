@@ -211,8 +211,8 @@ int	Server::checkConnection(int n, int fd, int i) {
 
 //     }
 
-int Server::validName(std::vector<std::string> params){
-    if (params[0][0] != '#')
+int Server::validName(std::string params){
+    if (params[0] != '#')
         return(-1);
 }
 
@@ -227,11 +227,35 @@ void Server::inviteChannel(std::vector<std::string> params, User *user, int fd){
 
 
 }
-void Server::createChannel(std::vector<std::string> params, User *user){
+void Server::createChannel(std::string name, std::string pass, User *user){
 
-    channels[params[0]] = new Channel(params[0], user, params[1]);
-    std::cout << "@" << user->getNickname() <<" created Channel " << params[0] << " with password " << params[1]<< std::endl;
+//    if (pass.size() == 0)
+//        pass = "";
+    channels[name] = new Channel(name, user, pass);
+    std::cout << "@" << user->getNickname() <<" created Channel " << name << std::endl;
 }
+
+std::queue<std::string>	split4(const std::string &s, char sep, bool include)
+{
+    std::queue<std::string>	ret;
+    std::string::const_iterator	i = s.begin();
+    while(i != s.end())
+    {
+        while (i != s.end() && *i == sep)
+            ++i;
+        std::string::const_iterator	j = std::find(i, s.end(), sep);
+        if (i != s.end())
+        {
+            if (include && j != s.end())
+                ret.push(std::string(i, j + 1));
+            else
+                ret.push(std::string(i, j));
+            i = j;
+        }
+    }
+    return ret;
+}
+
 
 int Server::pollConnections(int listenSocket) {
     int rc;
@@ -295,28 +319,34 @@ int Server::pollConnections(int listenSocket) {
                    //удаляем из user записанный message
                    if (users[i-1]->getMessages().size() > 0)
 						users[i-1]->message.pop();
-                   if (msg.getCommand() == "JOIN"){
+//                   ExCommands(&msg, users[i-1], i);
+                   if (msg.getCommand() == "JOIN") {
                        if (msg.getParameters().size() == 0)
-                           return(responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, msg.getCommand()));
-                       if (validName(msg.getParameters()) == -1)
-                           return(responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getCommand()));
-                       try
-                       {
-                           Channel	*ch = channels.at(msg.getParameters()[0]);
-                           ch->CheckConnect(users[i - 1], msg.getParameters()[1]);
-                       }
-                       catch(const std::exception& e)
-                       {
-                           createChannel(msg.getParameters(), users[i - 1]);
-//                           std::string myMessage = ":IRCSERV 366 kalexand2 #irc :End of /NAMES list\n" ;
+                           return (responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, msg.getCommand()));
+                       std::queue<std::string> keys;
+                       std::queue<std::string> chans = split4(msg.getParameters()[0], ',', false);
+                       keys = split4(msg.getParameters()[1], ',', false);
+                       for (; chans.size() > 0; chans.pop()) {
+                           std::string	key = keys.size() ? keys.front() : "";
+                           if (keys.size() > 0)
+                               keys.pop();
+                           if (validName(chans.front()) == -1)
+                               return (responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getCommand()));
+                           try {
+                               Channel *ch = channels.at(chans.front());
+                               ch->CheckConnect(users[i - 1], key);
+                           }
+                           catch (const std::exception &e) {
+                               createChannel(chans.front(),key , users[i - 1]);
+//                                   std::string myMessage = ":IRCSERV 366 kalexand2 #irc :End of /NAMES list\n" ;
 //                           send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
+                           }
                        }
                    }
 //                   else if  (msg.getCommand() == "INVITE") {
 //                       inviteChannel(msg.getParameters(), users[i-1]);
 //                   }
-                   else if (msg.getCommand() == "PRIVMSG"){
-
+                   else if (msg.getCommand() == "PRIVMSG" || msg.getCommand() == "NOTICE" ){
                        if (msg.getParameters().size() == 0)
                            return(responser.sendError(fds_vec[i].fd, ERR_NORECIPIENT, msg.getCommand()));
                        else if (msg.getParameters().size() == 1)
@@ -328,12 +358,26 @@ int Server::pollConnections(int listenSocket) {
                        std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
                        send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
                    }
+//                    else if (msg.getCommand() == "KICK")
+//                    {
+// //                       commandKICK();
+//                        Channel	*chan = channels.at(msg.getParameters()[0]);
+//                        std::string	message = "KICK " + chan->getName() + " " + msg.getParameters()[1] + " :";
+//                        if (msg.getParameters().size() > 2)
+//                            message += msg.getParameters()[2];
+//                        else
+//                            message += users[i - 1]->getNickname();
+//                        chan->sendMessage(message + "\n", users[i - 1], true);
+//                        chan->disconnect(*(getUserByName(msg.getParameters()[1])));
+//                        getUserByName(msg.getParameters()[1])->removeChannel(msg.getParams()[0]);
+
+//                    }
                    else{
                        int n = 0;
                        n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);
                        checkConnection(n, fds_vec[i].fd, i - 1);
                    }
-                   
+
                }
                 // if (incomingMSG.find("NICK") != std::string::npos) {
                 //     int sentTo = fds_vec[i].fd;
@@ -341,8 +385,8 @@ int Server::pollConnections(int listenSocket) {
                 //     response.sendMotd(fds_vec[i].fd, nickTo);
                 // }
 //					sendPrivmsg(fds[i].fd, storage[i].buffer);
-                //std::cout << "Printing data" << std::endl;
-                //storage[i].printNodes();
+//                std::cout << "Printing data" << std::endl;
+//                storage[i].printNodes();
 //					if (rc < 0) {
 //						perror("  send() failed");
 //						closeConn = TRUE;
@@ -399,3 +443,12 @@ std::string Server::getNickbyFd(int fd){
     return nick;
 }
 
+User	*Server::getUserByName(const std::string &name)
+{
+    User	*ret;
+    size_t	usersCount = users.size();
+    for (size_t i = 0; i < usersCount; i++)
+        if (users[i]->getNickname() == name)
+            ret = users[i];
+    return ret;
+}
