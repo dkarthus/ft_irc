@@ -4,7 +4,8 @@
 Channel::Channel(const std::string &name, const User *creator, const std::string &pass) :
 		name(name),  flags("n")
 {
-    if(pass.size() > 0)
+//    this->pass = " ";
+//    if(pass.size() > 0)
         this->pass = pass;
 	users.push_back(creator);
 	ops.push_back(creator);
@@ -34,13 +35,20 @@ void Channel::answerOper(const User *user){
 }
 
 void Channel::CheckConnect(const User *user, const std::string &passU){
+    std::vector<const User *>::const_iterator	begin = users.begin();
+    std::vector<const User *>::const_iterator	end = users.end();
+    for (; begin != end; ++begin) {
+        if (*begin == user)
+            return  ;
+    }
     if (passU != pass)
         responser.sendError(user->getSockfd(), ERR_BADCHANNELKEY, "JOIN");
-    else{
+    else
+    {
         users.push_back(user);
         sendMessageJoin(user, getName(), "JOIN");
-        std::string mssg=":IRCat 315 kalexand kalexand :End of /WHO list\n";
-        send(5, mssg.c_str(), mssg.size(), IRC_NOSIGNAL);
+//        std::string mssg=":IRCat 315 kalexand kalexand :End of /WHO list\n";
+//        send(5, mssg.c_str(), mssg.size(), IRC_NOSIGNAL);
 
         responser.sendAnswerJoin(user->getSockfd(), RPL_NOTOPIC, user->getNickname(), getName());
         answerOper(user);
@@ -58,18 +66,19 @@ void Channel::sendMessageJoin(const User *user, const std::string	name, std::str
     {
             (*begin)->sendMessage(msg);
     }
-
 };
 
 
 void Channel::sendMessagePrivmsg(const User *user, const std::string	name, std::string command, std::string mess){
     std::string	msg;
+
     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command  + " " +  name + " :" + mess + "\n";
     std::vector<const User *>::const_iterator	begin = users.begin();
     std::vector<const User *>::const_iterator	end = users.end();
     for (; begin != end; ++begin)
     {
-        (*begin)->sendMessage(msg);
+        if(*begin != user)
+            (*begin)->sendMessage(msg);
     }
 }
 

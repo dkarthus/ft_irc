@@ -332,14 +332,14 @@ int Server::pollConnections(int listenSocket) {
                                keys.pop();
                            if (validName(chans.front()) == -1)
                                return (responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getCommand()));
+                           if (msg.getParameters().size() == 1)
+                               key = "";
                            try {
                                Channel *ch = channels.at(chans.front());
                                ch->CheckConnect(users[i - 1], key);
                            }
                            catch (const std::exception &e) {
                                createChannel(chans.front(),key , users[i - 1]);
-//                                   std::string myMessage = ":IRCSERV 366 kalexand2 #irc :End of /NAMES list\n" ;
-//                           send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
                            }
                        }
                    }
@@ -354,10 +354,10 @@ int Server::pollConnections(int listenSocket) {
 
                        sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd), users[i - 1]);
                    }
-                   else if (msg.getCommand() == "WHO"){
-                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
-                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
-                   }
+//                   else if (msg.getCommand() == "WHO"){
+//                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
+//                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
+//                   }
 //                    else if (msg.getCommand() == "KICK")
 //                    {
 // //                       commandKICK();
