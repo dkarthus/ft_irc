@@ -21,7 +21,9 @@ public:
     void sendMessageJoin(const User *user, const std::string	name, std::string command);
     void answerOper(const User *user);
     void sendMessagePrivmsg(const User *user, const std::string	name, std::string command, std::string mess);
-    // void sendMessageKick(const User *user, const std::string	name, std::string command);
+    void sendMessageKick(const User *user, const std::string	name, std::string command);
+	void sendMessageInvite(const User *user, int replay, const std::string	from, const std::string chName, const
+	std::string nick);
 //
 	const std::string				&getName() const;
 //	const std::string				&getTopic() const;
@@ -32,16 +34,20 @@ public:
 //	void							setPass(const User &user, const std::string &newPass);
 //	void							setFlag(std::string &flag);
 //	void							removeFlag(std::string &flag);
+	bool 							containsFlag(const std::string &flag) const;
 //
-//	bool							isOperator(const User &user) const;
-//	bool							isBanned(const User &user) const;
+	bool							isOperator(const User &user) const;
+	bool							isBanned(const User &user) const;
+	bool							isMember(const std::string &nick) const;
 //	bool							isEmpty() const;
-//
-//	void							addBanned(const std::string &nick);
-//	void							removeBanned(const std::string &nick);
+
+	void							addUser(const User &user);
+	void							removeUser(const User &user);
+	void							addBanned(const std::string &nick);
+	void							removeBanned(const std::string &nick);
 //	void							invite(const User &user, const User &receiver);
 //	void							addOperator(const User &user);
-//	void							removeOperator(const User &user);
+	void							removeOp(const User &user);
 //	void							displayTopic(const User &user);
 //	void							disconnect(const User &user);
 
@@ -49,7 +55,7 @@ private:
 	std::string						name;
 	std::vector<const User *>		ops;
 	std::vector<const User *>		users;
-//	std::vector<std::string>	banned;
+	std::vector<std::string>	banned;
 	std::string						pass;
 //	std::string						topic;
 	std::string						flags;

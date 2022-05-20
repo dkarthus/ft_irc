@@ -358,20 +358,62 @@ int Server::pollConnections(int listenSocket) {
                        std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
                        send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
                    }
-//                    else if (msg.getCommand() == "KICK")
-//                    {
-// //                       commandKICK();
-//                        Channel	*chan = channels.at(msg.getParameters()[0]);
-//                        std::string	message = "KICK " + chan->getName() + " " + msg.getParameters()[1] + " :";
-//                        if (msg.getParameters().size() > 2)
-//                            message += msg.getParameters()[2];
-//                        else
-//                            message += users[i - 1]->getNickname();
-//                        chan->sendMessage(message + "\n", users[i - 1], true);
-//                        chan->disconnect(*(getUserByName(msg.getParameters()[1])));
-//                        getUserByName(msg.getParameters()[1])->removeChannel(msg.getParams()[0]);
-
-//                    }
+                   else if (msg.getCommand() == "KICK")
+                   {
+					   if (msg.getParameters().size() < 2)
+						   responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, "KICK");
+					   else if (!containsChannel(msg.getParameters()[0]))
+						   responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getParameters()[0]);
+					   else if (!channels.at(msg.getParameters()[0])->isOperator(*users[i - 1]))
+						   responser.sendError(fds_vec[i].fd, ERR_CHANOPRIVSNEEDED, msg.getParameters()[0]);
+					   else if (!channels.at(msg.getParameters()[0])->isMember(users[i - 1]->getNickname()))
+						   responser.sendError(fds_vec[i].fd, ERR_NOTONCHANNEL, msg.getParameters()[0]);
+					   else if (!channels[msg.getParameters()[0]]->isMember(msg.getParameters()[1]))
+						   responser.sendError(fds_vec[i].fd, ERR_NOSUCHNICK, msg.getParameters()[1]);
+					   else if (!channels.at(msg.getParameters()[0])->isMember(msg.getParameters()[1]))
+						   responser.sendError(fds_vec[i].fd, ERR_USERNOTINCHANNEL, msg.getParameters()[1]);
+					   else
+					   {
+						   Channel *chan = channels.at(msg.getParameters()[0]);
+						   std::string message = "KICK " + chan->getName() + " " + msg.getParameters()[1] + " :";
+						   if (msg.getParameters().size() > 2)
+							   message += msg.getParameters()[2];
+						   else
+							   message += users[i - 1]->getNickname();
+						   chan->sendMessageKick(users[i - 1], msg.getParameters()[1], message + "\n");
+						   chan->removeUser(*(getUserByName(msg.getParameters()[1])));
+					   }
+                   }
+				   else if (msg.getCommand() == "INVITE")
+				   {
+					   if (msg.getParameters().size() < 2)
+						   responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, "INVITE");
+					   else if (!containsUser(msg.getParameters()[0]))
+						   responser.sendError(fds_vec[i].fd, ERR_NOSUCHNICK, msg.getParameters()[0]);
+					   else if (!containsChannel(msg.getParameters()[1]) || !channels.at(msg.getParameters()[1])
+					   ->isMember(msg.getParameters()[0]))
+						   responser.sendError(fds_vec[i].fd, ERR_NOTONCHANNEL, msg.getParameters()[1]);
+					   else
+					   {
+						   User *recipient = getUserByName( msg.getParameters()[0]);
+						   Channel *chan = channels.at(msg.getParameters()[1]);
+						   if (chan->isMember(msg.getParameters()[0]))
+							   responser.sendError(fds_vec[i].fd, ERR_USERONCHANNEL, msg.getParameters()[0]);
+						   else
+						   {
+							   if (chan->containsFlag("i") && chan->isOperator(*users[i - 1]))
+									responser.sendError(fds_vec[i].fd, ERR_CHANOPRIVSNEEDED, users[i - 1]->getNickname());
+							   else
+							   {
+								   chan->addUser(*getUserByName( msg.getParameters()[0]));
+								   recipient->sendMessage(":" + users[i - 1]->getNickname() + "!Adium@127.0.0.1 " + "INVITE " + recipient->getNickname
+								   () + " :" + chan->getName() + "\n");
+								   chan->sendMessageInvite(users[i - 1], RPL_INVITING, "localhost", chan->getName(),
+														   recipient->getNickname());
+							   }
+						   }
+					   }
+				   }
                    else{
                        int n = 0;
                        n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);
@@ -451,4 +493,27 @@ User	*Server::getUserByName(const std::string &name)
         if (users[i]->getNickname() == name)
             ret = users[i];
     return ret;
+}
+
+bool	Server::containsChannel(const std::string &name) const
+{
+	try
+	{
+		channels.at(name);
+		return true;
+	}
+	catch(const std::exception& e)
+	{}
+	return false;
+}
+
+bool	Server::containsUser(const std::string &nick) const
+{
+	size_t	usersCount = users.size();
+	for (size_t i = 0; i < usersCount; i++)
+	{
+		if (users[i]->getNickname() == nick)
+			return (true);
+	}
+	return (false);
 }

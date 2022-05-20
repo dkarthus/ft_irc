@@ -68,5 +68,8 @@ public:
     int sendPrivmsg(int fd, const std::vector<std::string> param, int fd_send, std::string sender, User *user);
 //    int ExCommands(Message *msg, User *user, int i);
     User *getUserByName(const std::string &name);
+
+	bool	containsChannel(const std::string &name) const;
+	bool	containsUser(const std::string &nick) const;
 };
 #endif
