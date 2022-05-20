@@ -332,6 +332,8 @@ int Server::pollConnections(int listenSocket) {
                                keys.pop();
                            if (validName(chans.front()) == -1)
                                return (responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getCommand()));
+                           if (msg.getParameters().size() == 1)
+                               key = "";
                            try {
                                Channel *ch = channels.at(chans.front());
                                ch->CheckConnect(users[i - 1], key);
@@ -354,10 +356,28 @@ int Server::pollConnections(int listenSocket) {
 
                        sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd), users[i - 1]);
                    }
-                   else if (msg.getCommand() == "WHO"){
-                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
-                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
-                   }
+//                   else if (msg.getCommand() == "WHO"){
+//                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
+//                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
+//                   }
+//                    else if (msg.getCommand() == "KICK")
+//                    {
+// //                       commandKICK();
+//                        Channel	*chan = channels.at(msg.getParameters()[0]);
+//                        std::string	message = "KICK " + chan->getName() + " " + msg.getParameters()[1] + " :";
+//                        if (msg.getParameters().size() > 2)
+//                            message += msg.getParameters()[2];
+//                        else
+//                            message += users[i - 1]->getNickname();
+//                        chan->sendMessage(message + "\n", users[i - 1], true);
+//                        chan->disconnect(*(getUserByName(msg.getParameters()[1])));
+//                        getUserByName(msg.getParameters()[1])->removeChannel(msg.getParams()[0]);
+
+//                    }
+//                   else if (msg.getCommand() == "WHO"){
+//                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
+//                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
+//                   }
                    else if (msg.getCommand() == "KICK")
                    {
 					   if (msg.getParameters().size() < 2)
