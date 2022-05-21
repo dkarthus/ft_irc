@@ -34,7 +34,7 @@ private:
     Responser           responser;
     Storage				storage[FD_SIZE];
     std::vector<User *> users;
-//    std::vector<Channel *> channels;
+
 
 public:
     Server();
