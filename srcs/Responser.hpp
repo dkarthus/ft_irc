@@ -40,8 +40,8 @@
 #define RPL_NAMREPLY			353
 #define RPL_ENDOFNAMES		366
 #define RPL_MOTD				372
-#define RPL_MOTDSTART			375
-#define RPL_ENDOFMOTD			376
+#define RPL_MOTDSTART		375
+#define RPL_ENDOFMOTD		376
 #define RPL_AWAY				301
 #define RPL_INVITING			341
 

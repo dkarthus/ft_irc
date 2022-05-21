@@ -410,8 +410,7 @@ int Server::pollConnections(int listenSocket) {
 						   responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, "INVITE");
 					   else if (!containsUser(msg.getParameters()[0]))
 						   responser.sendError(fds_vec[i].fd, ERR_NOSUCHNICK, msg.getParameters()[0]);
-					   else if (!containsChannel(msg.getParameters()[1]) || !channels.at(msg.getParameters()[1])
-					   ->isMember(msg.getParameters()[0]))
+					   else if (!containsChannel(msg.getParameters()[1]))
 						   responser.sendError(fds_vec[i].fd, ERR_NOTONCHANNEL, msg.getParameters()[1]);
 					   else
 					   {
@@ -430,6 +429,11 @@ int Server::pollConnections(int listenSocket) {
 								   () + " :" + chan->getName() + "\n");
 								   chan->sendMessageInvite(users[i - 1], RPL_INVITING, "localhost", chan->getName(),
 														   recipient->getNickname());
+								   chan->sendMessageJoin(getUserByName( msg.getParameters()[0]), chan->getName(), "JOIN");
+								   responser.sendAnswerJoin(getUserByName( msg.getParameters()[0])->getSockfd(),
+															RPL_NOTOPIC, getUserByName( msg.getParameters()[0])->getNickname(), chan->getName());
+								   chan->answerOper(getUserByName( msg.getParameters()[0]));
+								   responser.sendAnswerJoin(getUserByName( msg.getParameters()[0])->getSockfd(), RPL_ENDOFNAMES, getUserByName( msg.getParameters()[0])->getNickname(), chan->getName());
 							   }
 						   }
 					   }

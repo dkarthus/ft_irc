@@ -143,8 +143,12 @@ bool	Channel::isMember(const std::string &nick) const
 	std::vector<const User *>::const_iterator	beg = users.begin();
 	std::vector<const User *>::const_iterator	end = users.end();
 	for (; beg != end; ++beg)
+	{
+		std::cout << nick << " <-NICK\n";
+		std::cout << (*beg)->getNickname() << " <-USER\n";
 		if ((*beg)->getNickname() == nick)
 			return (true);
+	}
 	return (false);
 }
 
