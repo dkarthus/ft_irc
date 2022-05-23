@@ -4,8 +4,9 @@
 Channel::Channel(const std::string &name, const User *creator, const std::string &pass) :
 		name(name),  flags("n")
 {
-    if(pass.size() > 0)
-        this->pass = pass;
+//    this->pass = " ";
+//    if(pass.size() > 0)
+    this->pass = pass;
 	users.push_back(creator);
 	ops.push_back(creator);
     sendMessageJoin(creator, name, "JOIN");
@@ -81,28 +82,18 @@ void Channel::sendMessagePrivmsg(const User *user, const std::string	name, std::
     }
 }
 
-void Channel::sendMessageKick(const User *user, const std::string	name, std::string command)
-{
-     std::string	msg;
-     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command;// + " :" + name+ "\n";
-     std::vector<const User *>::const_iterator	begin = users.begin();
-     std::vector<const User *>::const_iterator	end = users.end();
-     for (; begin != end; ++begin)
-     {
-         (*begin)->sendMessage(msg);
-     }
-}
+// void Channel::sendMessageKick(const User *user, const std::string	name, std::string command){
+//     std::string	msg;
+//     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command + " :" + name+ "\n";
+//     std::vector<const User *>::const_iterator	begin = users.begin();
+//     std::vector<const User *>::const_iterator	end = users.end();
+//     for (; begin != end; ++begin)
+//     {
+//         (*begin)->sendMessage(msg);
+//     }
 
-void Channel::sendMessageInvite(const User *user, int replay, const std::string	from, const std::string chName, const
-std::string nick)
-{
-	std::string	msg = ":" + from + " ";
-	std::stringstream	ss;
-	ss << replay;
-	msg += ss.str() + " " + user->getNickname() + " ";
-	msg += chName + " " + nick + "\n";
-	user->sendMessage(msg);
-}
+// };
+
 
 Channel::~Channel()
 {}
@@ -130,43 +121,14 @@ const std::string	&Channel::getName() const{
 //	}
 //}
 //
-bool	Channel::isOperator(const User &user) const
-{
-	for (size_t i = 0; i < ops.size(); i++)
-		if (ops[i]->getNickname() == user.getNickname())
-			return true;
-	return false;
-}
-
-bool	Channel::isMember(const std::string &nick) const
-{
-	std::vector<const User *>::const_iterator	beg = users.begin();
-	std::vector<const User *>::const_iterator	end = users.end();
-	for (; beg != end; ++beg)
-	{
-		std::cout << nick << " <-NICK\n";
-		std::cout << (*beg)->getNickname() << " <-USER\n";
-		if ((*beg)->getNickname() == nick)
-			return (true);
-	}
-	return (false);
-}
-
-void	Channel::removeUser(const User &user)
-{
-	std::vector<const User *>::iterator	begin = users.begin();
-	std::vector<const User *>::iterator	end = users.end();
-	for (; begin != end; ++begin)
-		if (*begin == &user)
-			break ;
-	users.erase(begin);
-	removeOp(user);
-}
-
-void	Channel::addUser(const User &user)
-{
-	users.push_back(&user);
-}
+//bool	Channel::isOperator(const User &user) const
+//{
+//	for (size_t i = 0; i < ops.size(); i++)
+//		if (ops[i]->getNickname() == user.getNickname())
+//			return true;
+//	return false;
+//}
+//
 //void	Channel::setPass(const User &user, const std::string &newPass)
 //{
 //	if (pass.size() > 0 && newPass.size() > 0)
@@ -181,21 +143,13 @@ void	Channel::addUser(const User &user)
 //	return flags;
 //}
 //
-
-bool	Channel::containsFlag(const std::string &flag) const
-{
-	if (flags.find(flag) != std::string::npos)
-		return true;
-	return false;
-}
-
-bool	Channel::isBanned(const User &user) const
-{
-	for (size_t i = 0; i < banned.size(); i++)
-		if (banned[i] == user.getNickname())
-			return true;
-	return false;
-}
+//bool	Channel::isBanned(const User &user) const
+//{
+//	for (size_t i = 0; i < banned.size(); i++)
+//		if (banned[i] == user.getNickname())
+//			return true;
+//	return false;
+//}
 //
 //bool	Channel::isEmpty() const
 //{
@@ -227,43 +181,43 @@ bool	Channel::isBanned(const User &user) const
 //		ops.push_back(&user);
 //}
 //
-void	Channel::removeOp(const User &user)
-{
-	if (isOperator(user))
-	{
-		size_t	i;
-		for (i = 0; i < ops.size(); i++)
-			if (ops[i] == &user)
-				break;
-		ops.erase(ops.begin() + i);
-		if (ops.size() == 0 && users.size() > 0)
-		{
-			ops.push_back(users[0]);
-			//SEND MSG ABOUT NEW OPS?
-		}
-	}
-}
+//void	Channel::removeOperator(const User &user)
+//{
+//	if (isOperator(user))
+//	{
+//		size_t	i;
+//		for (i = 0; i < ops.size(); i++)
+//			if (ops[i] == &user)
+//				break;
+//		ops.erase(ops.begin() + i);
+//		if (ops.size() == 0 && users.size() > 0)
+//		{
+//			ops.push_back(users[0]);
+//			//SEND MSG ABOUT NEW OPS?
+//		}
+//	}
+//}
 //
 //
-void	Channel::addBanned(const std::string &nick)
-{
-	banned.push_back(nick);
-}
-
-void	Channel::removeBanned(const std::string &nick)
-{
-	size_t	i = 0;
-	while (i < banned.size())
-	{
-		if (banned[i] == nick)
-		{
-			banned.erase(banned.begin() + i);
-			break ;
-		}
-		++i;
-	}
-}
-
+//void	Channel::addBanned(const std::string &nick)
+//{
+//	banned.push_back(nick);
+//}
+//
+//void	Channel::removeBanned(const std::string &nick)
+//{
+//	size_t	i = 0;
+//	while (i < banned.size())
+//	{
+//		if (banned[i] == nick)
+//		{
+//			banned.erase(banned.begin() + i);
+//			break ;
+//		}
+//		++i;
+//	}
+//}
+//
 //void	Channel::disconnect(const User &user)
 //{
 //	std::vector<const User *>::iterator	begin = users.begin();

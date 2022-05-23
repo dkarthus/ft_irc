@@ -101,18 +101,6 @@ int Responser::sendError(int fd, int errorCode, const std::string& command)
         case ERR_BADCHANNELKEY:
             error = error + ":Cannot join channel (+k)\n";
             break;
-		case ERR_CHANOPRIVSNEEDED:
-			error += " " + command + " :You're not channel operator\n";
-			break;
-		case ERR_NOTONCHANNEL:
-			error += " " + command + " :You're not on that channel\n";
-			break;
-		case ERR_USERNOTINCHANNEL:
-			error += " " + command + " :They aren't on that channel\n";
-			break;
-		case ERR_USERONCHANNEL:
-			error += " " + command + " :is already on channel\n";
-			break;
 	}
 	std::cout << "Printing error" << error << std::endl;
 	send(fd, error.c_str(), error.length(), 0);

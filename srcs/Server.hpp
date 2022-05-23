@@ -34,7 +34,8 @@ private:
     Responser           responser;
     Storage				storage[FD_SIZE];
     std::vector<User *> users;
-
+//    User *Bot = new User(100, "BOT");
+//    std::vector<Channel *> channels;
 
 public:
     Server();
@@ -68,8 +69,6 @@ public:
     int sendPrivmsg(int fd, const std::vector<std::string> param, int fd_send, std::string sender, User *user);
 //    int ExCommands(Message *msg, User *user, int i);
     User *getUserByName(const std::string &name);
-
-	bool	containsChannel(const std::string &name) const;
-	bool	containsUser(const std::string &nick) const;
+    void sendPrivmsgToBot(int fd, std::string mes, std::string sender,User *user);
 };
 #endif
