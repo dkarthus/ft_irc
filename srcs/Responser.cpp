@@ -113,6 +113,18 @@ int Responser::sendError(int fd, int errorCode, const std::string& command)
 		case ERR_USERONCHANNEL:
 			error += " " + command + " :is already on channel\n";
 			break;
+		case ERR_UMODEUNKNOWNFLAG:
+			error += " :Unknown MODE flag\n";
+			break;
+		case ERR_KEYSET:
+			error += " " + command + " :Channel key already set\n";
+			break;
+		case ERR_UNKNOWNMODE:
+			error += " " + command + " :is unknown mode char to me\n";
+			break;
+		case ERR_USERSDONTMATCH:
+			error += " :Cant change mode for other users\n";
+			break;
 	}
 	std::cout << "Printing error" << error << std::endl;
 	send(fd, error.c_str(), error.length(), 0);

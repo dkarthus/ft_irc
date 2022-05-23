@@ -66,6 +66,7 @@ public:
     void createChannel(std::string name, std::string pass, User *user);
     void inviteChannel(std::vector<std::string> params, User *user, int fd);
     int sendPrivmsg(int fd, const std::vector<std::string> param, int fd_send, std::string sender, User *user);
+	int		rpl(const std::string &from, const User &user, int rpl, const std::string &arg1,const std::string &arg2);
 //    int ExCommands(Message *msg, User *user, int i);
     User *getUserByName(const std::string &name);
 

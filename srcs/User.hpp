@@ -32,6 +32,7 @@
 
 class User {
 public:
+	Responser responser;
     //Storage				                storage;
     //std::string						    prefix;
     //std::string						    command;
@@ -44,7 +45,6 @@ public:
     User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName, const std::string& rName);
 	User();
 	~User();
-    unsigned char						flags;
 
     //setters
 	void								setPassword(const std::string &pass);
@@ -52,7 +52,14 @@ public:
 	void								setHostname(const std::string &hName);
 	void								setNickname(const std::string &nName);
 	void								setRealname(const std::string &rName);
-    void                                setFlag(unsigned char flag);
+
+
+	//FLAGS
+	void							setFlag(const std::string &flag);
+	void							removeFlag(const std::string &flag);
+	int								processFlags(const Message &msg, User &user);
+	bool 							containsFlag(const std::string &flag) const;
+	const std::string				&getFlags() const;
 
     //geters
     const std::queue<std::string>		&getMessages() const;
@@ -66,6 +73,7 @@ public:
     //methods
     void								parse_message(Node *mes);
 	void								sendMessage(const std::string &mssg) const;
+
     
 
 	std::queue<std::string>				message;
@@ -77,6 +85,7 @@ private:
     std::string							username;
     std::string							hostname;
     std::string                         realname;
+	std::string							flags;
 };
 
 #endif

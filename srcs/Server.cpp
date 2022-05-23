@@ -438,6 +438,57 @@ int Server::pollConnections(int listenSocket) {
 						   }
 					   }
 				   }
+				   else if (msg.getCommand() == "MODE") {
+					   User *recipient;
+					   Channel *chan;
+					   User *op = getUserByName(getNickbyFd(fds_vec[i].fd));
+
+					   if (msg.getParameters()[0][0] == '#')
+					   {
+						   chan = channels.at(msg.getParameters()[0]);
+						   recipient = getUserByName(msg.getParameters()[2]);
+						   if (!containsChannel(msg.getParameters()[0]))
+							   responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getParameters()[0]);
+						   else if (!channels.at(msg.getParameters()[0])->isOperator(*op))
+							   responser.sendError(fds_vec[i].fd, ERR_CHANOPRIVSNEEDED, msg.getParameters()[0]);
+						   else if (!channels.at(msg.getParameters()[0])->isMember(recipient->getNickname()) ||
+						   !channels.at(msg.getParameters()[0])->isMember(op->getNickname()))
+							   responser.sendError(fds_vec[i].fd, ERR_NOTONCHANNEL, msg.getParameters()[0]);
+						   else if (msg.getParameters().size() == 1)
+							   rpl("!Adium@127.0.0.1", *op, RPL_CHANNELMODEIS, msg.getParameters()[0], channels.at
+							   (msg.getParameters()[0])->getFlags());
+						   else if (chan->processFlags(msg, *op, *recipient) != -1)
+						   {
+							   std::string	flag = msg.getParameters()[1];
+							   std::string	tmp = (flag[1] == 'o' || flag[1] == 'v') ? " " + msg.getParameters()[2] : "";
+							   channels.at(msg.getParameters()[0])->sendMessageMode("MODE " + msg.getParameters()[0] + " " + msg.getParameters()[1]  + tmp + "\n", *op);
+						   }
+					   }
+					   else
+					   {
+						   if (!(op->getNickname() == msg.getParameters()[0]))
+						   	   responser.sendError(fds_vec[i].fd, ERR_USERSDONTMATCH, "");
+						   else
+						   {
+							   if (msg.getParameters().size() == 1)
+							   {
+								   std::string	flags = "+";
+								   if (!op->containsFlag("i"))
+									   flags += "i";
+								   if (!op->containsFlag("s"))
+									   flags += "s";
+								   if (!op->containsFlag("w"))
+									   flags += "w";
+								   if (!op->containsFlag("o"))
+									   flags += "o";
+								   rpl("!Adium@127.0.0.1", *op, RPL_UMODEIS, flags, "");
+							   }
+							   else if (op->processFlags(msg, *op) != -1)
+								   op->sendMessage(":" + users[i - 1]->getNickname() + "!Adium@127.0.0.1 " + "MODE " + msg.getParameters()[0] + " " +
+								   msg.getParameters()[1] + "\n");
+						   }
+					   }
+				   }
                    else{
                        int n = 0;
                        n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);
@@ -511,7 +562,7 @@ std::string Server::getNickbyFd(int fd){
 
 User	*Server::getUserByName(const std::string &name)
 {
-    User	*ret;
+    User	*ret = NULL;
     size_t	usersCount = users.size();
     for (size_t i = 0; i < usersCount; i++)
         if (users[i]->getNickname() == name)
@@ -540,4 +591,13 @@ bool	Server::containsUser(const std::string &nick) const
 			return (true);
 	}
 	return (false);
+}
+
+int		rpl(const std::string &from, const User &user, int rpl, const std::string &arg1,const std::string &arg2)
+{
+	std::string	msg = ":" + from + " ";
+	std::stringstream	rplStr;
+	rplStr << rpl;
+	msg += rplStr.str() + " " + user.getNickname() + " " + arg1 + " +" + arg2 + "\n";
+	send(user.getSockfd(), msg.c_str(), msg.size(), IRC_NOSIGNAL);
 }

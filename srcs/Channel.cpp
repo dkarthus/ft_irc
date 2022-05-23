@@ -84,7 +84,7 @@ void Channel::sendMessagePrivmsg(const User *user, const std::string	name, std::
 void Channel::sendMessageKick(const User *user, const std::string	name, std::string command)
 {
      std::string	msg;
-     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command;// + " :" + name+ "\n";
+     msg += ":" + user->getNickname() + "!Adium@127.0.0.1 " + command;// + " :" + name+ "\n"; //ToDo CHECK THIS PART
      std::vector<const User *>::const_iterator	begin = users.begin();
      std::vector<const User *>::const_iterator	end = users.end();
      for (; begin != end; ++begin)
@@ -144,8 +144,6 @@ bool	Channel::isMember(const std::string &nick) const
 	std::vector<const User *>::const_iterator	end = users.end();
 	for (; beg != end; ++beg)
 	{
-		std::cout << nick << " <-NICK\n";
-		std::cout << (*beg)->getNickname() << " <-USER\n";
 		if ((*beg)->getNickname() == nick)
 			return (true);
 	}
@@ -167,20 +165,20 @@ void	Channel::addUser(const User &user)
 {
 	users.push_back(&user);
 }
-//void	Channel::setPass(const User &user, const std::string &newPass)
-//{
-//	if (pass.size() > 0 && newPass.size() > 0)
-//		//SEND MSG ERROR KEY SET
-//		return;
-//	else
-//		this->pass = newPass;
-//}
-//
-//const std::string	&Channel::getFlags() const
-//{
-//	return flags;
-//}
-//
+
+void	Channel::setPass(const User &user, const std::string &newPass)
+{
+	if (pass.size() > 0 && newPass.size() > 0)
+		responser.sendError(user.getSockfd(), ERR_KEYSET, name);
+	else
+		this->pass = newPass;
+}
+
+const std::string	&Channel::getFlags() const
+{
+	return flags;
+}
+
 
 bool	Channel::containsFlag(const std::string &flag) const
 {
@@ -203,30 +201,31 @@ bool	Channel::isBanned(const User &user) const
 //		return true;
 //	return false;
 //}
-//
-//void	Channel::setFlag(std::string &flag)
-//{
-//	std::string::size_type n;
-//	if ((n = flags.find(flag)) != std::string::npos)
-//		flags.erase(n);
-//	else
-//		flags += flag;
-//}
-//
-//void	Channel::removeFlag(std::string &flag)
-//{
-//	std::string::size_type n;
-//	if ((n = flags.find(flag)) == std::string::npos)
-//		flags.erase(n);
-//}
-//
-//
-//void	Channel::addOperator(const User &user)
-//{
-//	if (!isOperator(user))
-//		ops.push_back(&user);
-//}
-//
+
+
+void	Channel::setFlag(const std::string &flag)
+{
+	std::string::size_type n;
+	if ((n = flags.find(flag)) != std::string::npos)
+		return;
+	else
+		flags += flag;
+}
+
+void	Channel::removeFlag(const std::string &flag)
+{
+	std::string::size_type n;
+	if ((n = flags.find(flag)) == std::string::npos)
+		flags.erase(n);
+}
+
+
+void	Channel::addOp(const User &user)
+{
+	if (!isOperator(user))
+		ops.push_back(&user);
+}
+
 void	Channel::removeOp(const User &user)
 {
 	if (isOperator(user))
@@ -264,6 +263,122 @@ void	Channel::removeBanned(const std::string &nick)
 	}
 }
 
+int	Channel::processFlags(const Message &msg, User &op, User &rec)
+{
+	std::string	flag = msg.getParameters()[1];
+
+	if (msg.getParameters().size() < 3)
+		return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+	else if (!isMember(msg.getParameters()[2]))
+		return responser.sendError(op.getSockfd(), ERR_NOSUCHNICK, msg.getParameters()[2]);
+
+	if (flag == "+o")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		else if (!isMember(msg.getParameters()[2]))
+			return responser.sendError(op.getSockfd(), ERR_NOSUCHNICK, msg.getParameters()[2]);
+		addOp(rec);
+	}
+	else if (flag == "-o")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		else if (!isMember(msg.getParameters()[2]))
+			return responser.sendError(op.getSockfd(), ERR_NOSUCHNICK, msg.getParameters()[2]);
+		removeOp(rec);
+	}
+	else if (flag == "+p")
+		setFlag("p");
+	else if (flag == "-p")
+		removeFlag("p");
+	else if (flag == "+s")
+		setFlag("s");
+	else if (flag == "-s")
+		removeFlag("s");
+	else if (flag == "+i")
+		setFlag("i");
+	else if (flag == "-i")
+		removeFlag("i");
+	else if (flag == "+t")
+		setFlag("t");
+	else if (flag == "-t")
+		removeFlag("t");
+	else if (flag == "+n")
+		setFlag("n");
+	else if (flag == "-n")
+		removeFlag("n");
+	else if (flag == "+m")
+		setFlag("m");
+	else if (flag == "-m")
+		removeFlag("m");
+	else if (flag == "+l")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+	}
+	else if (flag == "-l")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+	}
+	else if (flag == "+b")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		addBanned(msg.getParameters()[2]);
+	}
+	else if (flag == "-b")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		removeBanned(msg.getParameters()[2]);
+	}
+	else if (flag == "+v")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		else if (!isMember(msg.getParameters()[2]))
+			return responser.sendError(op.getSockfd(), ERR_NOSUCHNICK, msg.getParameters()[2]);
+
+	}
+	else if (flag == "-v")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		else if (!isMember(msg.getParameters()[2]))
+			return responser.sendError(op.getSockfd(), ERR_NOSUCHNICK, msg.getParameters()[2]);
+
+	}
+	else if (flag == "+k")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		else
+			setPass(op, msg.getParameters()[2]);
+	}
+	else if (flag == "-k")
+	{
+		if (msg.getParameters().size() < 3)
+			return responser.sendError(op.getSockfd(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		else
+			setPass(op, "");
+	}
+	else
+		return responser.sendError(op.getSockfd(), ERR_UNKNOWNMODE, flag);
+	return 0;
+}
+
+void	Channel::sendMessageMode(const std::string &message, const User &op) const
+{
+	std::string	msg;
+	msg += ":" + op.getNickname() + "!Adium@127.0.0.1 " + message;
+
+	std::vector<const User *>::const_iterator	begin = users.begin();
+	std::vector<const User *>::const_iterator	end = users.end();
+	for (; begin != end; ++begin)
+			(*begin)->sendMessage(msg);
+}
 //void	Channel::disconnect(const User &user)
 //{
 //	std::vector<const User *>::iterator	begin = users.begin();

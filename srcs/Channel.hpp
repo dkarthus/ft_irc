@@ -24,16 +24,19 @@ public:
     void sendMessageKick(const User *user, const std::string	name, std::string command);
 	void sendMessageInvite(const User *user, int replay, const std::string	from, const std::string chName, const
 	std::string nick);
+	void	sendMessageMode(const std::string &message, const User &op) const;
+
 //
 	const std::string				&getName() const;
 //	const std::string				&getTopic() const;
-//	const std::string				&getFlags() const;
+	const std::string				&getFlags() const;
 //
 //	void							setTopic(const User &user, const std::string &topic);
-//	void							setLimit(unsigned short limit);
-//	void							setPass(const User &user, const std::string &newPass);
-//	void							setFlag(std::string &flag);
-//	void							removeFlag(std::string &flag);
+	void							setLimit(unsigned short limit);
+	void							setPass(const User &user, const std::string &newPass);
+	void							setFlag(const std::string &flag);
+	void							removeFlag(const std::string &flag);
+	int								processFlags(const Message &msg, User &op, User &rec);
 	bool 							containsFlag(const std::string &flag) const;
 //
 	bool							isOperator(const User &user) const;
@@ -46,7 +49,7 @@ public:
 	void							addBanned(const std::string &nick);
 	void							removeBanned(const std::string &nick);
 //	void							invite(const User &user, const User &receiver);
-//	void							addOperator(const User &user);
+	void							addOp(const User &user);
 	void							removeOp(const User &user);
 //	void							displayTopic(const User &user);
 //	void							disconnect(const User &user);
@@ -55,7 +58,7 @@ private:
 	std::string						name;
 	std::vector<const User *>		ops;
 	std::vector<const User *>		users;
-	std::vector<std::string>	banned;
+	std::vector<std::string>		banned;
 	std::string						pass;
 //	std::string						topic;
 	std::string						flags;

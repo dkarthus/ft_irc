@@ -123,17 +123,57 @@ const std::queue<std::string> &User::getMessages() const
 	return this->message;
 }
 
+void	User::setFlag(const std::string &flag)
+{
+	std::string::size_type n;
+	if ((n = flags.find(flag)) != std::string::npos)
+		return;
+	else
+		flags += flag;
+}
 
-unsigned char	User::getFlags() const
+void	User::removeFlag(const std::string &flag)
+{
+	std::string::size_type n;
+	if ((n = flags.find(flag)) == std::string::npos)
+		flags.erase(n);
+}
+
+const std::string	&User::getFlags() const
 {
 	return flags;
 }
 
-void	User::setFlag(unsigned char flag)
+
+bool	User::containsFlag(const std::string &flag) const
 {
-	flags |= flag;
-	// if (flag == BREAKCONNECTION && quitMessage.size() == 0)
-	// 	quitMessage = "Client exited";
+	if (flags.find(flag) != std::string::npos)
+		return true;
+	return false;
+}
+
+int		User::processFlags(const Message &msg, User &user)
+{
+	std::string	flag = msg.getParameters()[1];
+	if (flag == "+i")
+		setFlag("i");
+	else if (flag == "-i")
+		removeFlag("i");
+	else if (flag == "+s")
+		setFlag("s");
+	else if (flag == "-s")
+		removeFlag("s");
+	else if (flag == "+w")
+		setFlag("w");
+	else if (flag == "-w")
+		removeFlag("w");
+	else if (flag == "+o")
+		setFlag("o");
+	else if (flag == "-o")
+		removeFlag("o");
+	else
+		return responser.sendError(user.getSockfd(), ERR_UMODEUNKNOWNFLAG, "");
+	return 0;
 }
 
 //int getFdNick(std::string Nick){
