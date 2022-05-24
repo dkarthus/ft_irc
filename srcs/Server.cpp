@@ -472,7 +472,7 @@ int Server::pollConnections(int listenSocket) {
 						   {
 							   rpl("!Adium@127.0.0.1", *op, RPL_CHANNELMODEIS, msg.getParameters()[0], channels.at
 									   (msg.getParameters()[0])->getFlags());
-							   break;
+							   break ;
 						   }
 						   else if (!channels.at(msg.getParameters()[0])->isOperator(*op))
 							   responser.sendError(fds_vec[i].fd, ERR_CHANOPRIVSNEEDED, msg.getParameters()[0]);
