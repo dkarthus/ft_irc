@@ -25,7 +25,7 @@ void Responser::sendResponse(int fd, int respCode, std::string &nick)
 {
 	std::stringstream	ss;
 	ss << respCode;
-	std::string 		serverName = "IRCSERV";
+	std::string 		serverName = "!Adium@127.0.0.1";
 //	std::string 		nick;
 	std::string 		response = ":" + serverName + " " + ss.str() + " " + nick + " :";
 	switch (respCode)
@@ -56,13 +56,13 @@ void 			Responser::sendMotd(int fd, std::string &nick)
 int Responser::sendError(int fd, int errorCode, const std::string& command)
 {
 	std::string 		error;
-	std::string 		serverName = "IRCSERV";
+	std::string 		serverName = "!Adium@127.0.0.1";
 	std::stringstream	ss;
-	std::string 		nick;
+	std::string 		nick = "";
 	std::string 		channelName;
 	ss << errorCode;
 
-	error = ':' + serverName + " " + ss.str() + " " ;
+	error = ':' + serverName + " " + ss.str();
 	switch (errorCode)
 	{
 		case ERR_NEEDMOREPARAMS:
@@ -134,7 +134,7 @@ int Responser::sendError(int fd, int errorCode, const std::string& command)
 int Responser::sendAnswerJoin(int fd, int errorCode, const std::string& nick, const std::string& name)
 {
     std::string 		error;
-    std::string 		serverName = "IRCSERV";
+    std::string 		serverName = "!Adium@127.0.0.1";
     std::stringstream	ss;
     std::string 		nick_op;
     std::string 		channelName;
@@ -168,7 +168,7 @@ int Responser::sendAnswerJoin(int fd, int errorCode, const std::string& nick, co
 int Responser::sendListUsers(int fd, int errorCode, const std::string& nick, const std::string& nicksUser, const std::string& name)
 {
     std::string 		error;
-    std::string 		serverName = "IRCSERV";
+    std::string 		serverName = "!Adium@127.0.0.1";
     std::stringstream	ss;
 //    std::string 		nick_op;
     std::string 		channelName;

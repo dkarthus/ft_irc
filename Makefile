@@ -9,7 +9,8 @@ SRCS =		srcs/main.cpp \
 			srcs/User.cpp \
 			srcs/Privmsg.cpp \
 			srcs/Message.cpp \
-			srcs/Channel.cpp
+			srcs/Channel.cpp \
+			srcs/Bot.cpp
 
 OBJ = $(patsubst %.cpp, %.o, $(SRCS))
 

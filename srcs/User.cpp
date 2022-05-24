@@ -41,19 +41,19 @@ void	User::sendMessage(const std::string &mssg) const
     std::cout<<mssg.c_str() << "to fd "<< sockfd << std::endl;
 }
 
-User::User(int sockfd): sockfd(sockfd) {}
+User::User(int sockfd): sockfd(sockfd), flags("") {}
 
 User::User(int sockfd, const std::string& nName):
-sockfd(sockfd), nickname(nName) {}
+sockfd(sockfd), nickname(nName), flags("") {}
 
 User::User(int sockfd, const std::string& nName, const std::string &hName):
-sockfd(sockfd), nickname(nName), hostname(hName) {}
+sockfd(sockfd), nickname(nName), hostname(hName), flags("") {}
 
 User::User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName):
-sockfd(sockfd), nickname(nName), hostname(hName), username(uName) {}
+sockfd(sockfd), nickname(nName), hostname(hName), username(uName), flags("") {}
 
 User::User(int sockfd, const std::string& nName, const std::string& hName, const std::string& uName, const std::string& rName):
-sockfd(sockfd), nickname(nName), hostname(hName), username(uName), realname(rName) {}
+sockfd(sockfd), nickname(nName), hostname(hName), username(uName), realname(rName), flags("") {}
 
 User::~User()
 {}

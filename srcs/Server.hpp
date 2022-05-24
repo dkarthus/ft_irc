@@ -34,7 +34,8 @@ private:
     Responser           responser;
     Storage				storage[FD_SIZE];
     std::vector<User *> users;
-
+//    User *Bot = new User(100, "BOT");
+//    std::vector<Channel *> channels;
 
 public:
     Server();
@@ -53,6 +54,8 @@ public:
     ~Server();
     void			startSocket(Socket &serv_socket);
     void 			listenConnections(int socket);
+	bool			containsChannel(const std::string &name) const;
+	bool			containsUser(const std::string &nick) const;
 
     void 			initFdStruct(int socket);
     int 			pollConnections(int socket);
@@ -69,8 +72,6 @@ public:
 	int		rpl(const std::string &from, const User &user, int rpl, const std::string &arg1,const std::string &arg2);
 //    int ExCommands(Message *msg, User *user, int i);
     User *getUserByName(const std::string &name);
-
-	bool	containsChannel(const std::string &name) const;
-	bool	containsUser(const std::string &nick) const;
+    void sendPrivmsgToBot(int fd, std::string mes, std::string sender,User *user);
 };
 #endif

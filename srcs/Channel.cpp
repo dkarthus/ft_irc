@@ -4,8 +4,9 @@
 Channel::Channel(const std::string &name, const User *creator, const std::string &pass) :
 		name(name),  flags("n")
 {
-    if(pass.size() > 0)
-        this->pass = pass;
+//    this->pass = " ";
+//    if(pass.size() > 0)
+    this->pass = pass;
 	users.push_back(creator);
 	ops.push_back(creator);
     sendMessageJoin(creator, name, "JOIN");
@@ -154,9 +155,10 @@ void	Channel::removeUser(const User &user)
 {
 	std::vector<const User *>::iterator	begin = users.begin();
 	std::vector<const User *>::iterator	end = users.end();
-	for (; begin != end; ++begin)
-		if (*begin == &user)
+	for (; begin != end; begin++)
+		if ((*begin)->getNickname() == user.getNickname())
 			break ;
+	std::cout << "Removed user " << (*begin)->getNickname() << std::endl;
 	users.erase(begin);
 	removeOp(user);
 }

@@ -77,7 +77,7 @@ public:
     
 
 	std::queue<std::string>				message;
-    unsigned char	getFlags() const;
+
 private:
     int                                 sockfd;
     std::string							password;

@@ -165,10 +165,10 @@ int	Server::set_param_user(const std::string command, std::vector<std::string> p
 }
 
 int	Server::checkConnection(int n, int fd, int i) {
-    if (users[i]->getNickname().size() > 0 && users[i]->getUsername().size() > 0){
+    if (!users[i]->getNickname().empty() && !users[i]->getUsername().empty()){
         if (users[i]->getPassword().size() > 0 || n == 1){
-            if (!(users[i]->getFlags() & REGISTERED)){
-                users[i]->setFlag(REGISTERED);
+            if (!(users[i]->containsFlag("r"))){
+                users[i]->setFlag("r");
                 Responser response;
 //                sendResponse(fd, int respCode, std::string &nick)
                 std::string nickTo = users[i]->getNickname();
@@ -264,6 +264,7 @@ int Server::pollConnections(int listenSocket) {
     int closeConn;
     // Responser response;
 	struct pollfd new_fd;
+//    int bot = 0;
 
     for (i = 0; i < fds_vec.size(); i++)
     {
@@ -324,8 +325,12 @@ int Server::pollConnections(int listenSocket) {
                        if (msg.getParameters().size() == 0)
                            return (responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, msg.getCommand()));
                        std::queue<std::string> keys;
+                       std::string secPar = "";
                        std::queue<std::string> chans = split4(msg.getParameters()[0], ',', false);
-                       keys = split4(msg.getParameters()[1], ',', false);
+
+					   if (msg.getParameters().size() == 2)
+						   secPar = msg.getParameters()[1];
+                       keys = split4(secPar, ',', false);
                        for (; chans.size() > 0; chans.pop()) {
                            std::string	key = keys.size() ? keys.front() : "";
                            if (keys.size() > 0)
@@ -340,11 +345,16 @@ int Server::pollConnections(int listenSocket) {
                            }
                            catch (const std::exception &e) {
                                createChannel(chans.front(),key , users[i - 1]);
-//                                   std::string myMessage = ":IRCSERV 366 kalexand2 #irc :End of /NAMES list\n" ;
-//                           send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
                            }
                        }
                    }
+//                   else if (msg.getCommand() == "BOT")
+//                   {
+////                       User *Bot = new User( newSocket + 10);
+//                       sendPrivmsg(fds_vec[i].fd, msg.getParameters(), fds_vec[i].fd, "bot", users[i - 1]);
+//
+//
+//                   }
 //                   else if  (msg.getCommand() == "INVITE") {
 //                       inviteChannel(msg.getParameters(), users[i-1]);
 //                   }
@@ -353,8 +363,10 @@ int Server::pollConnections(int listenSocket) {
                            return(responser.sendError(fds_vec[i].fd, ERR_NORECIPIENT, msg.getCommand()));
                        else if (msg.getParameters().size() == 1)
                            return(responser.sendError(fds_vec[i].fd, ERR_NOTEXTTOSEND, msg.getCommand()));
-
-                       sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd), users[i - 1]);
+                       else if (msg.getParameters()[0] == "bot")
+                           sendPrivmsgToBot(fds_vec[i].fd, msg.getParameters()[1],getNickbyFd(fds_vec[i].fd),  users[i - 1]);
+                       else
+                            sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd), users[i - 1]);
                    }
 //                   else if (msg.getCommand() == "WHO"){
 //                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
@@ -407,7 +419,7 @@ int Server::pollConnections(int listenSocket) {
 				   else if (msg.getCommand() == "INVITE")
 				   {
 					   if (msg.getParameters().size() < 2)
-						   responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, "INVITE");
+						   responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, " INVITE " + users[i - 1]->getNickname());
 					   else if (!containsUser(msg.getParameters()[0]))
 						   responser.sendError(fds_vec[i].fd, ERR_NOSUCHNICK, msg.getParameters()[0]);
 					   else if (!containsChannel(msg.getParameters()[1]))
@@ -441,22 +453,32 @@ int Server::pollConnections(int listenSocket) {
 				   else if (msg.getCommand() == "MODE") {
 					   User *recipient;
 					   Channel *chan;
-					   User *op = getUserByName(getNickbyFd(fds_vec[i].fd));
 
+					   if (msg.getParameters().empty())
+					   {
+						   responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, " MODE " + users[i - 1]->getNickname
+								   ());
+						   break;
+					   }
+					   User *op = getUserByName(getNickbyFd(fds_vec[i].fd));
 					   if (msg.getParameters()[0][0] == '#')
 					   {
 						   chan = channels.at(msg.getParameters()[0]);
-						   recipient = getUserByName(msg.getParameters()[2]);
+						   if (msg.getParameters().size() > 2)
+							   recipient = getUserByName(msg.getParameters()[2]);
 						   if (!containsChannel(msg.getParameters()[0]))
 							   responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, msg.getParameters()[0]);
+						   else if (msg.getParameters().size() == 1)
+						   {
+							   rpl("!Adium@127.0.0.1", *op, RPL_CHANNELMODEIS, msg.getParameters()[0], channels.at
+									   (msg.getParameters()[0])->getFlags());
+							   break;
+						   }
 						   else if (!channels.at(msg.getParameters()[0])->isOperator(*op))
 							   responser.sendError(fds_vec[i].fd, ERR_CHANOPRIVSNEEDED, msg.getParameters()[0]);
 						   else if (!channels.at(msg.getParameters()[0])->isMember(recipient->getNickname()) ||
 						   !channels.at(msg.getParameters()[0])->isMember(op->getNickname()))
 							   responser.sendError(fds_vec[i].fd, ERR_NOTONCHANNEL, msg.getParameters()[0]);
-						   else if (msg.getParameters().size() == 1)
-							   rpl("!Adium@127.0.0.1", *op, RPL_CHANNELMODEIS, msg.getParameters()[0], channels.at
-							   (msg.getParameters()[0])->getFlags());
 						   else if (chan->processFlags(msg, *op, *recipient) != -1)
 						   {
 							   std::string	flag = msg.getParameters()[1];
@@ -593,11 +615,13 @@ bool	Server::containsUser(const std::string &nick) const
 	return (false);
 }
 
-int		rpl(const std::string &from, const User &user, int rpl, const std::string &arg1,const std::string &arg2)
+int		Server::rpl(const std::string &from, const User &user, int rpl, const std::string &arg1,const std::string &arg2)
 {
 	std::string	msg = ":" + from + " ";
 	std::stringstream	rplStr;
 	rplStr << rpl;
 	msg += rplStr.str() + " " + user.getNickname() + " " + arg1 + " +" + arg2 + "\n";
+	std::cout << msg << std::endl;
 	send(user.getSockfd(), msg.c_str(), msg.size(), IRC_NOSIGNAL);
+	return 0;
 }
