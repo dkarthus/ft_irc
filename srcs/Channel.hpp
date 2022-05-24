@@ -51,6 +51,7 @@ public:
 //	void							invite(const User &user, const User &receiver);
 	void							addOp(const User &user);
 	void							removeOp(const User &user);
+    bool	                        isUser(std::string name) const;
 //	void							displayTopic(const User &user);
 //	void							disconnect(const User &user);
 

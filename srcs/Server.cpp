@@ -365,6 +365,8 @@ int Server::pollConnections(int listenSocket) {
                            return(responser.sendError(fds_vec[i].fd, ERR_NOTEXTTOSEND, msg.getCommand()));
                        else if (msg.getParameters()[0] == "bot")
                            sendPrivmsgToBot(fds_vec[i].fd, msg.getParameters()[1],getNickbyFd(fds_vec[i].fd),  users[i - 1]);
+//                       else if (getNickbyFd(fds_vec[i].fd) )
+//                           return(responser.sendError(fds_vec[i].fd, ERR_NORECIPIENT, msg.getCommand()));
                        else
                             sendPrivmsg(fds_vec[i].fd, msg.getParameters(), getFdByNick(msg.getParameters()[0]), getNickbyFd(fds_vec[i].fd), users[i - 1]);
                    }

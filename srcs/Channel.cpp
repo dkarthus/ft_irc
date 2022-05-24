@@ -113,24 +113,6 @@ const std::string	&Channel::getName() const{
 	return (name);
 }
 
-//
-//const std::string	&Channel::getTopic() const
-//{
-//	return (topic);
-//}
-//
-//void	Channel::setTopic(const User &user, const std::string &topic)
-//{
-//	if ((flags.find("t")) && !isOperator(user))
-//		//SEND ERROR unable to set topic
-//		return;
-//	else
-//	{
-//		this->topic = topic;
-//		// send MSG TOPIC SET
-//	}
-//}
-//
 bool	Channel::isOperator(const User &user) const
 {
 	for (size_t i = 0; i < ops.size(); i++)
@@ -196,13 +178,6 @@ bool	Channel::isBanned(const User &user) const
 			return true;
 	return false;
 }
-//
-//bool	Channel::isEmpty() const
-//{
-//	if (users.size() == 0)
-//		return true;
-//	return false;
-//}
 
 
 void	Channel::setFlag(const std::string &flag)
@@ -244,8 +219,7 @@ void	Channel::removeOp(const User &user)
 		}
 	}
 }
-//
-//
+
 void	Channel::addBanned(const std::string &nick)
 {
 	banned.push_back(nick);
@@ -381,14 +355,11 @@ void	Channel::sendMessageMode(const std::string &message, const User &op) const
 	for (; begin != end; ++begin)
 			(*begin)->sendMessage(msg);
 }
-//void	Channel::disconnect(const User &user)
-//{
-//	std::vector<const User *>::iterator	begin = users.begin();
-//	std::vector<const User *>::iterator	end = users.end();
-//	for (; begin != end; ++begin)
-//		if (*begin == &user)
-//			break ;
-//	users.erase(begin);
-//	removeOperator(user);
-//
-//}
+
+bool	Channel::isUser(std::string name) const
+{
+    for (size_t i = 0; i < users.size(); i++)
+        if (users[i]->getNickname() == name)
+            return true;
+    return false;
+}
