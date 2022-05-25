@@ -5,13 +5,14 @@ Server::Server()
 
 }
 
-Server::Server(const char *port)
+Server::Server(const char *port, std::string p)
 {
     servSocket = Socket(port);
     servSocket.createAddrinfo();
     startSocket(servSocket);
     listenConnections(servSocket.getListenSock());
     initFdStruct(servSocket.getListenSock());
+    pass = p;
 }
 
 Server::Server(const Server &other)
@@ -148,16 +149,29 @@ void Server::initFdStruct(int socket)
 //     }
 // }
 
+int Server::checkNick(std::string nick)
+{
+    for (size_t i = 0; i < users.size(); i++)
+        if (users[i]->getNickname() == nick)
+            return -1;
+    return 1;
+}
+
 int	Server::set_param_user(const std::string command, std::vector<std::string> param, int i) {
     int pass = 0;
     if (command == "PASS"){
         pass = 1;
+        if (this->pass != param[0])
+            return(responser.sendError(fds_vec[i].fd, ERR_PASSWDMISMATCH , "PASS"));
         users[i]->setPassword(param[0]);
     }
     else if (command == "USER")
         users[i]->setUsername(param[0]);
-    else if (command == "NICK")
+    else if (command == "NICK") {
+        if (checkNick(param[0])== -1)
+            return(responser.sendError(fds_vec[i].fd, ERR_NICKCOLLISION, "NICK"));
         users[i]->setNickname(param[0]);
+    }
     return pass;
 //    if (user.getMessage().size > 0)
 //        return (NOTREGISTERED);

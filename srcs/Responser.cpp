@@ -125,6 +125,10 @@ int Responser::sendError(int fd, int errorCode, const std::string& command)
 		case ERR_USERSDONTMATCH:
 			error += " :Cant change mode for other users\n";
 			break;
+        case ERR_PASSWDMISMATCH:
+            error += " :Password incorrect\n";
+            break;
+
 	}
 	std::cout << "Printing error" << error << std::endl;
 	send(fd, error.c_str(), error.length(), 0);

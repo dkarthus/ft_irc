@@ -13,7 +13,7 @@ int			main(int argc, const char *argv[])
 			std::cout << "Please indicate correct port" << std::endl;// conversion failed because the input wasn't a number
 		else
 		{
-            Server			ircServer = Server(argv[1]);
+            Server			ircServer = Server(argv[1], argv[2]);
             for (;;)
             {
                 printf("polling...\n");
