@@ -45,7 +45,7 @@ void Server::startSocket(Socket &serv_socket)
     int 					yes;
     int 					on = 1;
 
-    for (tmp = serv_socket.getRes(); tmp != NULL; tmp->ai_next)
+    for (tmp = serv_socket.getRes(); tmp != NULL; tmp = tmp->ai_next)
     {
         /*************************************************************/
         /* Create an AF_INET6 stream socket to receive incoming      */
@@ -228,6 +228,7 @@ int	Server::checkConnection(int n, int fd, int i) {
 int Server::validName(std::string params){
     if (params[0] != '#')
         return(-1);
+	return 0;
 }
 
 void Server::inviteChannel(std::vector<std::string> params, User *user, int fd){
@@ -581,6 +582,7 @@ int Server::pollConnections(int listenSocket) {
         }
     }  /* End of existing connection is readable             */
     //} /* End of loop through pollable descriptors              */
+	return 0;
 }
 
 void Server::printFds() {
