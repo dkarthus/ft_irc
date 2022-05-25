@@ -513,6 +513,29 @@ int Server::pollConnections(int listenSocket) {
 						   }
 					   }
 				   }
+				   else if (msg.getCommand() == "PART")
+				   {
+					   if (msg.getParameters().size() < 1)
+						   responser.sendError(fds_vec[i].fd, ERR_NEEDMOREPARAMS, "PART");
+					   else
+					   {
+						   std::queue<std::string>	chans = split4(msg.getParameters()[0], ',', false);
+						   while (chans.size() > 0)
+						   {
+							   if (!containsChannel(chans.front()))
+								   responser.sendError(fds_vec[i].fd, ERR_NOSUCHCHANNEL, chans.front());
+							   else if (!channels.at(chans.front())->isMember(users[i - 1]->getNickname()))
+								   responser.sendError(fds_vec[i].fd, ERR_NOTONCHANNEL, chans.front());
+							   else
+							   {
+								   std::string message = "PART " + chans.front() + "\n";
+								   channels.at(chans.front())->sendMessageKick(users[i - 1], "", message);
+								   channels.at(chans.front())->removeUser(*users[i - 1]);
+							   }
+							   chans.pop();
+						   }
+					   }
+				   }
                    else{
                        int n = 0;
                        n = set_param_user(msg.getCommand(), msg.getParameters(), i-1);

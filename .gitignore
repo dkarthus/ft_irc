@@ -40,3 +40,6 @@ bircd
 ircserv
 .vscode
 LICENSE
+.DS_Store
+srcs/.DS_Store
+.gitignore
