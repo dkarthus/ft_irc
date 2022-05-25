@@ -34,6 +34,7 @@ private:
     Responser           responser;
     Storage				storage[FD_SIZE];
     std::vector<User *> users;
+    std::string         pass;
 //    User *Bot = new User(100, "BOT");
 //    std::vector<Channel *> channels;
 
@@ -47,7 +48,7 @@ public:
 
     int 				currentSize;
     std::map<std::string, Channel *> channels;
-    Server(const char *port);
+    Server(const char *port, std::string p);
     Server(const Server &other);
     const Socket    &getServSocket() const;
     Server			&operator=(const Server &other);
@@ -73,5 +74,6 @@ public:
 //    int ExCommands(Message *msg, User *user, int i);
     User *getUserByName(const std::string &name);
     void sendPrivmsgToBot(int fd, std::string mes, std::string sender,User *user);
+    int checkNick(std::string nick);
 };
 #endif
