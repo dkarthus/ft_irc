@@ -133,22 +133,6 @@ void Server::initFdStruct(int socket)
     /*************************************************************/
     timeout = (30 * 60 * 1000);
 }
-// int	Server::check_error(const std::string command, std::vector<std::string> param, int i) {
-//     if (command != "PASS" && command != "USER" && command != "NICK")
-//         return (NOTREGISTERED);
-//     else {
-
-// 		/*
-//         if (command == "PASS")
-//             user.setPassword(param[0]);
-//         else if (command == "USER")
-//             user.setUsername(param[0]);
-//         else if (command == "NICK")
-//             user.setNickname(param[0]);
-// 		*/
-//     }
-// }
-
 int Server::checkNick(std::string nick)
 {
     for (size_t i = 0; i < users.size(); i++)
@@ -196,34 +180,6 @@ int	Server::checkConnection(int n, int fd, int i) {
     }
     return 0;
 }
-
-// int	Server::join(const std::string command, std::vector<std::string> param){
-//     std::cout << "JOIN" << " name: " << param[0] << " pass: " << param[1] << std::endl;
-// //    if (param.size() == 0)
-// //        return -1;
-// //    else{
-// //        std::queue<std::string>	chans = split3(param[0], ',', false);
-// ////        std::cout << chans << std::endl;
-// //        std::queue<std::string>	keys;
-// //        if (param.size() > 1)
-// //            keys = split3(param[1], ',', false);
-// //        for (; chans.size() > 0; chans.pop()){
-// //                std::string	key = keys.size() ? keys.front() : "";
-// //                if (keys.size() > 0)
-// //                    keys.pop();
-// //
-// //        }
-// //    }
-// //    return 0;
-
-//         if (param.size() == 0)
-//             return -1;
-//         else{
-//             channels[param[0]] = new Channel(param[0], user, param[1]);
-//         }
-//         return 0;
-
-//     }
 
 int Server::validName(std::string params){
     if (params[0] != '#')
@@ -389,28 +345,6 @@ int Server::pollConnections(int listenSocket) {
                         users.erase(it + i - 1);
 //                        users[i-1]->removeFlag("r");
                     }
-//                   else if (msg.getCommand() == "WHO"){
-//                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
-//                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
-//                   }
-//                    else if (msg.getCommand() == "KICK")
-//                    {
-// //                       commandKICK();
-//                        Channel	*chan = channels.at(msg.getParameters()[0]);
-//                        std::string	message = "KICK " + chan->getName() + " " + msg.getParameters()[1] + " :";
-//                        if (msg.getParameters().size() > 2)
-//                            message += msg.getParameters()[2];
-//                        else
-//                            message += users[i - 1]->getNickname();
-//                        chan->sendMessage(message + "\n", users[i - 1], true);
-//                        chan->disconnect(*(getUserByName(msg.getParameters()[1])));
-//                        getUserByName(msg.getParameters()[1])->removeChannel(msg.getParams()[0]);
-
-//                    }
-//                   else if (msg.getCommand() == "WHO"){
-//                       std::string myMessage = ":IRCSERV 315 kalexand kalexand :End of /WHO list";
-//                       send(fds_vec[i].fd, myMessage.c_str(), myMessage.size(), 0);
-//                   }
                    else if (msg.getCommand() == "KICK")
                    {
 					   if (msg.getParameters().size() < 2)
@@ -539,19 +473,6 @@ int Server::pollConnections(int listenSocket) {
                    }
 
                }
-                // if (incomingMSG.find("NICK") != std::string::npos) {
-                //     int sentTo = fds_vec[i].fd;
-                //     std::string nickTo = (incomingMSG.find("azat") != std::string::npos) ? ("azat") : ("aizhan");
-                //     response.sendMotd(fds_vec[i].fd, nickTo);
-                // }
-//					sendPrivmsg(fds[i].fd, storage[i].buffer);
-//                std::cout << "Printing data" << std::endl;
-//                storage[i].printNodes();
-//					if (rc < 0) {
-//						perror("  send() failed");
-//						closeConn = TRUE;
-//					}
-                //printf("  Has sent data to %d descriptor\n", fds[i].fd);
             }
             if (closeConn) {
                 printf("   Closing %d descriptor\n", fds_vec[i].fd);
